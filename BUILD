@@ -48,5 +48,21 @@ recipe_test(
 )
 
 recipe_test(
+    name = "getMultipleArtifact",
+)
+
+recipe_test(
+    name = "getSingleArtifact",
+)
+
+recipe_test(
     name = "perVariantManifestPlaceholder",
+)
+
+recipe_test(
+    name = "variantDependencySubstitutionTest",
+)
+
+recipe_test(
+    name = "selectVariants",
 )
