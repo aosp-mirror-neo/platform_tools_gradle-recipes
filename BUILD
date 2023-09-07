@@ -40,6 +40,10 @@ recipe_test(
 )
 
 recipe_test(
+    name = "addMultipleArtifact",
+)
+
+recipe_test(
     name = "allProjectsApkAction",
 )
 
@@ -65,4 +69,8 @@ recipe_test(
 
 recipe_test(
     name = "selectVariants",
+)
+
+recipe_test(
+    name = "createSingleArtifact",
 )
