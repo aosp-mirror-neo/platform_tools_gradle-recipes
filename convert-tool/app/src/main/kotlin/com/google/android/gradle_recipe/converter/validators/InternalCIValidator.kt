@@ -32,7 +32,6 @@ class InternalCIValidator(
     private val gradlePath: String,
     private val branchRoot: Path,
 ) {
-    @Throws(IOException::class)
     fun validate(sourceAll: Path, tmpFolder: Path?) {
 
         val converter = RecipeConverter(
@@ -41,19 +40,14 @@ class InternalCIValidator(
             gradleVersion = null,
             gradlePath = gradlePath,
             mode = Mode.RELEASE,
-            overwrite = true,
             branchRoot = branchRoot,
         )
 
-        visitRecipes(sourceAll) { recipeFolder: Path ->
-            val destinationFolder: Path
+        val destinationFolder = tmpFolder ?: createTempDirectory().also {
+            it.toFile().deleteOnExit()
+        }
 
-            if (tmpFolder != null) {
-                destinationFolder = tmpFolder
-            } else {
-                destinationFolder = createTempDirectory()
-                destinationFolder.toFile().deleteOnExit()
-            }
+        visitRecipes(sourceAll) { recipeFolder: Path ->
 
             val conversionResult = converter.convert(
                 source = recipeFolder, destination = destinationFolder
@@ -62,7 +56,7 @@ class InternalCIValidator(
             if (conversionResult.isConversionSuccessful) {
                 println("Validating: $destinationFolder with AGP: $agpVersion and Gradle: $gradlePath")
                 val tasksExecutor = GradleTasksExecutor(destinationFolder)
-                tasksExecutor.executeTasks(conversionResult.recipe.tasks)
+                tasksExecutor.executeTasks(conversionResult.recipeData.tasks)
             }
         }
     }

@@ -15,28 +15,37 @@
  */
 package com.google.android.gradle_recipe.converter.converters
 
-import com.google.android.gradle_recipe.converter.recipe.Recipe
-import com.google.android.gradle_recipe.converter.recipe.RecipeMetadataParser
+import com.google.android.gradle_recipe.converter.deleteNonHiddenRecursively
+import com.google.android.gradle_recipe.converter.printErrorAndTerminate
+import com.google.android.gradle_recipe.converter.recipe.RecipeData
 import com.google.android.gradle_recipe.converter.recipe.toMajorMinor
 import java.io.File
-import java.io.IOException
 import java.lang.System.err
-import java.nio.file.*
+import java.nio.file.FileVisitResult
+import java.nio.file.Files
+import java.nio.file.Path
+import java.nio.file.SimpleFileVisitor
+import java.nio.file.StandardCopyOption
 import java.nio.file.attribute.BasicFileAttributes
-import kotlin.io.path.exists
 import kotlin.io.path.isDirectory
 import kotlin.io.path.isRegularFile
 import kotlin.io.path.readLines
 
 private const val VERSION_MAPPING = "version_mappings.txt"
 
-private lateinit var agpToGradleMap: Map<String, String>
+data class VersionInfo(
+    val agp: String,
+    val gradle: String,
+    val kotlin: String
+)
+
+private lateinit var agpToVersionsMap: Map<String, VersionInfo>
 private lateinit var maxAgp: String
-fun getGradleFromAgp(branchRoot: Path, agp: String): String? {
+fun getVersionsFromAgp(branchRoot: Path, agp: String): VersionInfo? {
     initAgpToGradleMap(branchRoot)
-    return agpToGradleMap[agp].also {
+    return agpToVersionsMap[agp].also {
         if (it == null) {
-            println(agpToGradleMap.entries)
+            println(agpToVersionsMap.entries)
         }
     }
 }
@@ -48,10 +57,10 @@ fun getMaxAgp(branchRoot: Path): String {
 
 @Synchronized
 private fun initAgpToGradleMap(branchRoot: Path) {
-    if (!::agpToGradleMap.isInitialized) {
+    if (!::agpToVersionsMap.isInitialized) {
         val file = branchRoot.resolve(VERSION_MAPPING)
         if (!file.isRegularFile()) {
-            throw RuntimeException("Missing AGP version mapping file at $file")
+            printErrorAndTerminate("Missing AGP version mapping file at $file")
         }
 
         val lines = file
@@ -59,22 +68,19 @@ private fun initAgpToGradleMap(branchRoot: Path) {
             .asSequence()
             .filter { !it.startsWith("#") }
 
-        agpToGradleMap = lines
+        agpToVersionsMap = lines
             .map {
-                val pair = it.split(";")
-                pair[0].toMajorMinor() to pair[1]
+                val values = it.split(";")
+                values[0].toMajorMinor() to VersionInfo(
+                    agp = values[0],
+                    gradle = values[1],
+                    kotlin = values[2]
+                )
             }.toMap()
 
         maxAgp = lines.map { it.split(";")[0] }.max()
     }
 }
-
-
-/**
- * Current supported Kotlin plugin, later we add a
- * CLI argument to support more versions
- */
-const val kotlinPluginVersion = "2.0.0-Beta1"
 
 /**
  * The compile SDK version for recipes
@@ -86,7 +92,7 @@ const val compileSdkVersion = "34"
  */
 const val minimumSdkVersion = "21"
 
-data class ConversionResult(val recipe: Recipe, val isConversionSuccessful: Boolean)
+data class ConversionResult(val recipeData: RecipeData, val isConversionSuccessful: Boolean)
 
 /**
  *  Converts the individual recipe, calculation the conversion mode by input parameters
@@ -96,8 +102,7 @@ class RecipeConverter(
     repoLocation: String?,
     gradleVersion: String?,
     gradlePath: String?,
-    mode: Mode,
-    private val overwrite: Boolean,
+    private val mode: Mode,
     branchRoot: Path,
     private val generateWrapper: Boolean = true,
 ) {
@@ -134,12 +139,12 @@ class RecipeConverter(
             }
 
             Mode.SOURCE -> {
-                SourceConverter()
+                SourceConverter(branchRoot)
             }
 
             Mode.RELEASE -> {
                 ReleaseConverter(
-                    agpVersion = agpVersion ?: error("Must specify the AGP version for release"),
+                    agpVersion = agpVersion ?: printErrorAndTerminate("Must specify the AGP version for release"),
                     gradleVersion = gradleVersion,
                     repoLocation = repoLocation,
                     gradlePath = gradlePath,
@@ -149,46 +154,50 @@ class RecipeConverter(
         }
     }
 
-    @Throws(IOException::class)
-    fun convert(source: Path, destination: Path): ConversionResult {
+    /**
+     * Converts a recipe from [source] into [destination]
+     *
+     * @param source the source folder containing the recipe.
+     * @param destination the destination folder. A new folder will be created inside to contain the recipe
+     *
+     */
+    fun convert(source: Path, destination: Path, overwrite: Boolean = false): ConversionResult {
         if (!source.isDirectory()) {
-            error("the source $source folder is not a directory")
+            printErrorAndTerminate("Source $source is not a directory!")
         }
 
-        if (destination.exists() && !isEmpty(destination)) {
+        val recipeData = RecipeData.loadFrom(source, mode)
+
+        val recipeDestination = destination.resolve(recipeData.destinationFolder)
+
+        if (recipeDestination.isRegularFile()) {
+            printErrorAndTerminate("Destination $recipeDestination exist but is not a folder!")
+        }
+
+        if (recipeDestination.isDirectory() && recipeDestination.isNotEmpty()) {
             if (!overwrite) {
-                error("the destination $destination folder is not empty, call converter with --overwrite to overwrite it")
+                printErrorAndTerminate("Destination $recipeDestination folder is not empty, call converter with --overwrite to overwrite it")
             } else {
-                destination.toFile().deleteRecursively()
+                recipeDestination.deleteNonHiddenRecursively()
             }
         }
 
-        val metadataParser = RecipeMetadataParser(source)
-        val recipe = Recipe(
-            minAgpVersion = metadataParser.minAgpVersion,
-            maxAgpVersion = metadataParser.maxAgpVersion,
-            tasks = metadataParser.tasks,
-            keywords = metadataParser.indexKeywords
-        )
-
-        val success = if (converter.isConversionCompliant(recipe)) {
-            converter.setRecipe(recipe)
+        val success = if (converter.isConversionCompliant(recipeData)) {
+            converter.recipeData = recipeData
 
             Files.walkFileTree(source, object : SimpleFileVisitor<Path>() {
-                @Throws(IOException::class)
                 override fun preVisitDirectory(dir: Path, attrs: BasicFileAttributes): FileVisitResult {
                     if (accept(dir.toFile())) {
-                        Files.createDirectories(destination.resolve(source.relativize(dir)))
+                        Files.createDirectories(recipeDestination.resolve(source.relativize(dir)))
                         return FileVisitResult.CONTINUE
                     }
 
                     return FileVisitResult.SKIP_SUBTREE
                 }
 
-                @Throws(IOException::class)
                 override fun visitFile(sourceFile: Path, attrs: BasicFileAttributes): FileVisitResult {
                     val fileName = sourceFile.fileName.toString()
-                    val destinationFile = destination.resolve(source.relativize(sourceFile))
+                    val destinationFile = recipeDestination.resolve(source.relativize(sourceFile))
 
                     when (fileName) {
                         "build.gradle" -> {
@@ -226,8 +235,8 @@ class RecipeConverter(
                 }
             })
 
-            if (generateWrapper) {
-                converter.copyGradleFolder(destination)
+            if (generateWrapper && mode != Mode.SOURCE) {
+                converter.copyGradleFolder(recipeDestination)
             }
 
             true
@@ -236,14 +245,8 @@ class RecipeConverter(
             false
         }
 
-        return ConversionResult(recipe, success)
-    }
-
-    @Throws(IOException::class)
-    fun isEmpty(path: Path): Boolean {
-        if (Files.isDirectory(path)) {
-            Files.list(path).use { entries -> return !entries.findFirst().isPresent }
-        }
-        return false
+        return ConversionResult(recipeData, success)
     }
 }
+
+private fun Path.isNotEmpty(): Boolean = Files.list(this).findAny().isPresent

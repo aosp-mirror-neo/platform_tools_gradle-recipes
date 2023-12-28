@@ -27,7 +27,12 @@ import com.google.android.gradle_recipe.converter.converters.RecursiveConverter
 import com.google.android.gradle_recipe.converter.validators.GithubPresubmitValidator
 import com.google.android.gradle_recipe.converter.validators.InternalCIValidator
 import com.google.android.gradle_recipe.converter.validators.WorkingCopyValidator
+import java.nio.file.Files
 import java.nio.file.Path
+import kotlin.io.path.ExperimentalPathApi
+import kotlin.io.path.deleteRecursively
+import kotlin.io.path.isDirectory
+import kotlin.io.path.name
 import kotlin.system.exitProcess
 import kotlinx.cli.ArgParser
 import kotlinx.cli.ArgType
@@ -49,9 +54,9 @@ fun main(args: Array<String>) {
     val parser = ArgParser(programName = TOOL_NAME, useDefaultHelpShortName = true)
 
     val overwrite by parser.option(ArgType.Boolean, shortName = "o", description = "Overwrite").default(false)
-    val source by parser.option(ArgType.String, shortName = "s", description = "Recipe source")
-    val sourceAll by parser.option(ArgType.String, shortName = "sa", description = "All recipe sources")
-    val destination by parser.option(ArgType.String, shortName = "d", description = "Destination folder")
+    val source by parser.option(ArgType.String, shortName = "s", description = "Recipe source: The folder directly containing a single recipe.")
+    val sourceAll by parser.option(ArgType.String, shortName = "sa", description = "All recipe sources: The folder containing recipe folders")
+    val destination by parser.option(ArgType.String, shortName = "d", description = "Destination folder. New folders will be created for each recipe.")
     val tmpFolder by parser.option(ArgType.String, shortName = "tf", description = "Temp folder")
     val agpVersion by parser.option(ArgType.String, shortName = "a", description = "AGP version")
     val repoLocation by parser.option(ArgType.String, shortName = "rl", description = "Repo location")
@@ -71,31 +76,52 @@ fun main(args: Array<String>) {
             override fun execute() {
                 val branchRoot = computeGitHubRootFolder()
 
-                if (source != null) {
+                val finalSource = source
+                val finalSourceAll = sourceAll
+
+                val destinationPath: Path =
+                    Path.of(destination ?: printErrorAndTerminate("destination must be specified"))
+
+                if (!destinationPath.isDirectory()) {
+                    printErrorAndTerminate("Folder does not exist: ${destinationPath.toAbsolutePath()}")
+                }
+
+                if (finalSource != null) {
                     RecipeConverter(
                         agpVersion = agpVersion,
                         repoLocation = repoLocation,
                         gradleVersion = gradleVersion,
                         gradlePath = gradlePath,
                         mode = mode ?: RELEASE,
-                        overwrite = overwrite,
                         branchRoot = branchRoot,
                     ).convert(
-                        source = Path.of(source ?: printErrorAndTerminate("source must be specified")),
-                        destination = Path.of(destination ?: printErrorAndTerminate("destination must be specified"))
+                        source = Path.of(finalSource),
+                        destination = destinationPath,
+                        overwrite = overwrite
                     )
-                } else {
+                } else if (finalSourceAll != null) {
+                    // if we do a convert all then we expect the root folder to be (mostly) empty
+                    // (hidden files, like git files, are kept)
+                    if (!destinationPath.isEmptyExceptForHidden()) {
+                        if (!overwrite) {
+                            printErrorAndTerminate("the destination $destinationPath folder is not empty, call converter with --overwrite to overwrite it")
+                        } else {
+                            destinationPath.deleteNonHiddenRecursively()
+                        }
+                    }
+
                     RecursiveConverter(
                         agpVersion = agpVersion,
                         repoLocation = repoLocation,
                         gradleVersion = gradleVersion,
                         gradlePath = gradlePath,
-                        overwrite = overwrite,
                         branchRoot = branchRoot,
                     ).convertAllRecipes(
-                        sourceAll = Path.of(sourceAll ?: printErrorAndTerminate("sourceAll must be specified")),
-                        destination = Path.of(destination ?: printErrorAndTerminate("destination must be specified"))
+                        sourceAll = Path.of(finalSourceAll),
+                        destination = destinationPath
                     )
+                } else {
+                    printErrorAndTerminate("one of source or sourceAll must be specified")
                 }
             }
         },
@@ -113,7 +139,7 @@ fun main(args: Array<String>) {
 
                 // check the env var for the SDK exist
                 if (System.getenv("ANDROID_HOME") == null) {
-                    throw RuntimeException("To run $COMMAND_VALIDATE command, the environment variable ANDROID_HOME must be set and must point to your Android SDK.")
+                    printErrorAndTerminate("To run $COMMAND_VALIDATE command, the environment variable ANDROID_HOME must be set and must point to your Android SDK.")
                 }
 
                 if (mode != null) {
@@ -210,7 +236,21 @@ private fun validateNullArg(arg: Any?, msg: String) {
     }
  }
 
-private fun printErrorAndTerminate(msg: String): Nothing {
+fun printErrorAndTerminate(msg: String): Nothing {
     System.err.println(msg)
+    if (System.getenv("CONVERT_DEBUG") != null) {
+        throw RuntimeException("error. See console output")
+    }
     exitProcess(1)
+}
+
+private fun Path.isEmptyExceptForHidden(): Boolean = !Files.list(this).anyMatch { !it.name.startsWith('.') }
+
+@OptIn(ExperimentalPathApi::class)
+fun Path.deleteNonHiddenRecursively() {
+    Files.list(this).filter {
+        !it.name.startsWith('.')
+    }.forEach {
+        it.deleteRecursively()
+    }
 }

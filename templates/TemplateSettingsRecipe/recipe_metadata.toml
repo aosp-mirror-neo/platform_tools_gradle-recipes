@@ -1,11 +1,14 @@
-title = "template"
+# optional (if present and non-blank) name to use in the index
+indexName = ""
+# optional (if present and non-blank) folder name to use when converting recipe in RELEASE mode
+destinationFolder = ""
 
 description ="""
   INSERT DESCRIPTION
   """
 
 [agpVersion]
-min = "8.1.0-alpha11"
+min = "8.2.0"
 
 # Relevant Gradle tasks to run per recipe
 [gradleTasks]

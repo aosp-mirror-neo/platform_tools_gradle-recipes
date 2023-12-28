@@ -16,7 +16,7 @@
 
 package com.google.android.gradle_recipe.converter.converters
 
-import com.google.android.gradle_recipe.converter.recipe.Recipe
+import com.google.android.gradle_recipe.converter.recipe.RecipeData
 import java.nio.file.Files
 import java.nio.file.Path
 import kotlin.io.path.writeLines
@@ -24,33 +24,20 @@ import kotlin.io.path.writeLines
 /**  This mode has the placeholders ($AGP_VERSION etc') and
  *   this is how we store the recipes in the dev branch
  */
-class SourceConverter : Converter {
-    override fun isConversionCompliant(recipe: Recipe): Boolean {
+class SourceConverter(branchRoot: Path) : Converter(branchRoot) {
+    override fun isConversionCompliant(recipeData: RecipeData): Boolean {
         return true
     }
 
     override fun convertBuildGradle(source: Path, target: Path) {
-        val originalLines = Files.readAllLines(source)
-        val resultLines: List<String> = unwrapGradlePlaceholders(originalLines)
-
-        target.writeLines(resultLines, Charsets.UTF_8)
+        target.writeLines(Files.readAllLines(source).unwrapGradlePlaceholders(), Charsets.UTF_8)
     }
 
     override fun convertSettingsGradle(source: Path, target: Path) {
-        val originalLines = Files.readAllLines(source)
-        val resultLines: List<String> = unwrapGradlePlaceholders(originalLines)
-
-        target.writeLines(resultLines, Charsets.UTF_8)
+        target.writeLines(Files.readAllLines(source).unwrapGradlePlaceholders(), Charsets.UTF_8)
     }
 
     override fun convertVersionCatalog(source: Path, target: Path) {
-        val originalLines = Files.readAllLines(source)
-        val resultLines: List<String> = unwrapVersionCatalogPlaceholders(originalLines)
-
-        target.writeLines(resultLines, Charsets.UTF_8)
-    }
-
-    override fun copyGradleFolder(dest: Path) {
-
+        target.writeLines(Files.readAllLines(source).unwrapVersionCatalogPlaceholders(), Charsets.UTF_8)
     }
 }
