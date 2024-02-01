@@ -20,7 +20,9 @@ import com.android.tools.gradle.Gradle
 import com.android.utils.FileUtils
 import com.google.android.gradle_recipe.converter.converters.RecipeConverter
 import com.google.android.gradle_recipe.converter.converters.RecipeConverter.Mode.RELEASE
+import com.google.android.gradle_recipe.converter.converters.ResultMode
 import com.google.android.gradle_recipe.converter.recipe.RecipeData
+import com.google.android.gradle_recipe.converter.recipe.toMajorMinor
 import com.google.common.truth.Truth.assertThat
 import java.io.File
 import java.nio.file.Files
@@ -76,6 +78,12 @@ class GradleRecipeTest {
                     generateWrapper = false,
                 )
             val result = recipeConverter.convert(source, destination)
+            when (result.resultMode) {
+                ResultMode.SUCCESS -> { /* do nothing */}
+                // Return early if the AGP version is incompatible with the recipe.
+                ResultMode.SKIPPED -> return
+                ResultMode.FAILURE -> fail("Recipe conversion failed.")
+            }
 
             val tasks = result.recipeData.tasks
             assertThat(tasks).isNotEmpty()
@@ -120,7 +128,7 @@ class GradleRecipeTest {
         // minor versions).
         allTestedAgpVersions.forEachIndexed { i, testedAgpVersion ->
             if (testedAgpVersion != "ToT") {
-                assertThat(testedAgpVersion.take(4)).isEqualTo(expectedAgpVersions[i].take(4))
+                assertThat(testedAgpVersion.toMajorMinor()).isEqualTo(expectedAgpVersions[i])
             }
         }
 
@@ -128,7 +136,7 @@ class GradleRecipeTest {
         // version matching gradlePath.
         var found = false
         expectedAgpVersions.forEachIndexed { i, expectedAgpVersion ->
-            if (agpVersion.take(4) == expectedAgpVersion.take(4)) {
+            if (agpVersion.toMajorMinor() == expectedAgpVersion) {
                 found = true
                 assertThat(gradlePath).contains(expectedGradleVersions[i])
             }
