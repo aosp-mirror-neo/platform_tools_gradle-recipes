@@ -14,27 +14,20 @@
  * limitations under the License.
  */
 
-plugins {
-    `java-gradle-plugin`
-    alias(libs.plugins.kotlin.jvm)
-}
+rootProject.name = "build-logic"
 
-java {
-    toolchain {
-        languageVersion.set(JavaLanguageVersion.of(17))
+pluginManagement {
+    repositories {
+        $AGP_REPOSITORY
+        $PLUGIN_REPOSITORIES
     }
 }
 
-dependencies {
-    implementation(libs.android.gradlePlugin.api)
-    implementation(gradleKotlinDsl())
-}
-
-gradlePlugin {
-    plugins {
-        create("allProjectsApkActionSettings") {
-            id = "android.recipes.all_projects_apk_action"
-            implementationClass = "CustomSettings"
-        }
+dependencyResolutionManagement {
+    repositories {
+        $AGP_REPOSITORY
+        $DEPENDENCY_REPOSITORIES
     }
 }
+
+include(":plugins")

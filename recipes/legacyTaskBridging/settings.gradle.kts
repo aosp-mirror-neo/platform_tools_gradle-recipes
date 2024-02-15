@@ -14,27 +14,22 @@
  * limitations under the License.
  */
 
-plugins {
-    `java-gradle-plugin`
-    alias(libs.plugins.kotlin.jvm)
-}
+rootProject.name = "legacyTaskBridging"
 
-java {
-    toolchain {
-        languageVersion.set(JavaLanguageVersion.of(17))
+pluginManagement {
+    includeBuild("build-logic")
+    repositories {
+        $AGP_REPOSITORY
+        $PLUGIN_REPOSITORIES
     }
 }
 
-dependencies {
-    implementation(libs.android.gradlePlugin.api)
-    implementation(gradleKotlinDsl())
-}
-
-gradlePlugin {
-    plugins {
-        create("allProjectsApkActionSettings") {
-            id = "android.recipes.all_projects_apk_action"
-            implementationClass = "CustomSettings"
-        }
+dependencyResolutionManagement {
+    repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
+    repositories {
+        $AGP_REPOSITORY
+        $DEPENDENCY_REPOSITORIES
     }
 }
+
+include(":app")

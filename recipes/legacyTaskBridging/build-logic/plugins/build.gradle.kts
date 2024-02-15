@@ -26,15 +26,15 @@ java {
 }
 
 dependencies {
-    implementation(libs.android.gradlePlugin.api)
+    compileOnly(libs.android.gradlePlugin.api)
     implementation(gradleKotlinDsl())
 }
 
 gradlePlugin {
     plugins {
-        create("allProjectsApkActionSettings") {
-            id = "android.recipes.all_projects_apk_action"
-            implementationClass = "CustomSettings"
+        create("customPlugin") {
+            id = "android.recipes.custom_plugin"
+            implementationClass = "CustomPlugin"
         }
     }
 }

@@ -15,26 +15,16 @@
  */
 
 plugins {
-    `java-gradle-plugin`
-    alias(libs.plugins.kotlin.jvm)
+    alias(libs.plugins.android.application)
+    alias(libs.plugins.kotlin.android)
+    id("android.recipes.custom_plugin")
 }
 
-java {
-    toolchain {
-        languageVersion.set(JavaLanguageVersion.of(17))
-    }
-}
-
-dependencies {
-    implementation(libs.android.gradlePlugin.api)
-    implementation(gradleKotlinDsl())
-}
-
-gradlePlugin {
-    plugins {
-        create("allProjectsApkActionSettings") {
-            id = "android.recipes.all_projects_apk_action"
-            implementationClass = "CustomSettings"
-        }
+android {
+    namespace = "com.example.android.recipes.recipe"
+    compileSdk = $COMPILE_SDK
+    defaultConfig {
+       minSdk = $MINIMUM_SDK
+       targetSdk = $COMPILE_SDK
     }
 }
