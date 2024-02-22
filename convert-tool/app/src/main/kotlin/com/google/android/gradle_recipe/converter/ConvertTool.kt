@@ -18,6 +18,8 @@
 
 package com.google.android.gradle_recipe.converter
 
+import com.google.android.gradle_recipe.converter.context.Context
+import com.google.android.gradle_recipe.converter.converters.FullAgpVersion
 import com.google.android.gradle_recipe.converter.converters.RecipeConverter
 import com.google.android.gradle_recipe.converter.converters.RecipeConverter.Mode
 import com.google.android.gradle_recipe.converter.converters.RecipeConverter.Mode.RELEASE
@@ -39,7 +41,6 @@ import kotlinx.cli.ArgType
 import kotlinx.cli.ExperimentalCli
 import kotlinx.cli.Subcommand
 import kotlinx.cli.default
-
 
 const val TOOL_NAME = "convert-tool"
 const val COMMAND_VALIDATE = "validate"
@@ -74,8 +75,6 @@ fun main(args: Array<String>) {
             "Convert one or more recipes from one state to the other (default mode is $RELEASE)"
         ) {
             override fun execute() {
-                val branchRoot = computeGitRootFolder()
-
                 val finalSource = source
                 val finalSourceAll = sourceAll
 
@@ -88,12 +87,12 @@ fun main(args: Array<String>) {
 
                 if (finalSource != null) {
                     RecipeConverter(
-                        agpVersion = agpVersion,
+                        context = Context.standalone(),
+                        agpVersion = agpVersion?.let { FullAgpVersion.of(it) },
                         repoLocation = repoLocation,
                         gradleVersion = gradleVersion,
                         gradlePath = gradlePath,
                         mode = mode ?: RELEASE,
-                        branchRoot = branchRoot,
                     ).convert(
                         source = Path.of(finalSource),
                         destination = destinationPath,
@@ -111,11 +110,11 @@ fun main(args: Array<String>) {
                     }
 
                     RecursiveConverter(
-                        agpVersion = agpVersion,
+                        context = Context.standalone(),
+                        agpVersion = agpVersion?.let { FullAgpVersion.of(it) },
                         repoLocation = repoLocation,
                         gradleVersion = gradleVersion,
                         gradlePath = gradlePath,
-                        branchRoot = branchRoot,
                     ).convertAllRecipes(
                         sourceAll = Path.of(finalSourceAll),
                         destination = destinationPath
@@ -134,8 +133,6 @@ fun main(args: Array<String>) {
                 validateNullArg(repoLocation, "'repoLocation' must not be provided for subcommand '$COMMAND_VALIDATE'")
                 validateNullArg(gradleVersion, "'gradleVersion' must not be provided for subcommand '$COMMAND_VALIDATE'")
                 validateNullArg(gradlePath, "'gradlePath' must not be provided for subcommand '$COMMAND_VALIDATE'")
-
-                val branchRoot = computeGitRootFolder()
 
                 // check the env var for the SDK exist
                 if (System.getenv("ANDROID_HOME") == null) {
@@ -157,7 +154,7 @@ fun main(args: Array<String>) {
                         "'sourceAll' must not be provided for subcommand '$COMMAND_VALIDATE' and 'mode=$WORKINGCOPY'"
                     )
 
-                    val validator = WorkingCopyValidator(branchRoot)
+                    val validator = WorkingCopyValidator(Context.standalone())
                     validator.validate(
                         Path.of(
                             source
@@ -171,7 +168,7 @@ fun main(args: Array<String>) {
                         "'source' must not be provided for subcommand '$COMMAND_VALIDATE' when not providing 'mode' argument"
                     )
 
-                    val validator = GithubPresubmitValidator(branchRoot)
+                    val validator = GithubPresubmitValidator(Context.standalone())
                     validator.validateAll(
                         Path.of(
                             sourceAll
@@ -194,13 +191,13 @@ fun main(args: Array<String>) {
                 validateNullArg(mode, "'mode' must not be provided for subcommand '$COMMAND_VALIDATE_CI'")
 
                 val validator = InternalCIValidator(
-                    agpVersion = agpVersion
+                    context = Context.standalone(),
+                    agpVersion = agpVersion?.let { FullAgpVersion.of(it) }
                         ?: printErrorAndTerminate("'agpVersion' must not be null with subcommand '$COMMAND_VALIDATE_CI'"),
                     repoLocation = repoLocation
                         ?: printErrorAndTerminate("'repoLocation' must not be null with subcommand '$COMMAND_VALIDATE_CI'"),
                     gradlePath = gradlePath
                         ?: printErrorAndTerminate("'gradlePath' must not be null with subcommand '$COMMAND_VALIDATE_CI'"),
-                    branchRoot = computeGitRootFolder(),
                 )
                 validator.validate(
                     sourceAll = Path.of(
@@ -218,29 +215,6 @@ fun main(args: Array<String>) {
     if (result.commandName == TOOL_NAME) {
         println("Missing subcommand. Use $TOOL_NAME -h to see usage")
         exitProcess(1)
-    }
-}
-
-/**
- * Compute the root of the git project, in order to find files needed by the conversion logic.
- *
- * The logic will vary based on where the tool's jar is located. On the github workflow, this run from
- * a different path.
- */
-private fun computeGitRootFolder(): Path {
-    val url = RecipeConverter::class.java.protectionDomain.codeSource.location
-    val path = Path.of(url.toURI())
-
-    val standaloneJar = System.getenv("STANDALONE_JAR") != null
-
-    if (standaloneJar) {
-        // The path is going to be $ROOT/convert-tool/app/build/libs/recipes-converter.jar
-        // we want to return $ROOT
-        return path.resolve("../../../../../").normalize()
-    } else {
-        // The path is going to be $ROOT/convert-tool/app/build/install/convert-tool/lib/recipes-converter.jar
-        // we want to return $ROOT
-        return path.resolve("../../../../../../../").normalize()
     }
 }
 

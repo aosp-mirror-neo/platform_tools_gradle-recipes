@@ -15,6 +15,7 @@
  */
 package com.google.android.gradle_recipe.converter.converters
 
+import com.google.android.gradle_recipe.converter.context.Context
 import com.google.android.gradle_recipe.converter.deleteNonHiddenRecursively
 import com.google.android.gradle_recipe.converter.printErrorAndTerminate
 import com.google.android.gradle_recipe.converter.recipe.RecipeData
@@ -26,58 +27,6 @@ import java.nio.file.StandardCopyOption
 import java.nio.file.attribute.BasicFileAttributes
 import kotlin.io.path.isDirectory
 import kotlin.io.path.isRegularFile
-import kotlin.io.path.readLines
-
-private const val VERSION_MAPPING = "version_mappings.txt"
-
-data class VersionInfo(
-    val agp: String,
-    val gradle: String,
-    val kotlin: String
-)
-
-private lateinit var agpToVersionsMap: Map<String, VersionInfo>
-private lateinit var maxAgp: String
-fun getVersionsFromAgp(branchRoot: Path, agp: String): VersionInfo? {
-    initAgpToGradleMap(branchRoot)
-    return agpToVersionsMap[agp].also {
-        if (it == null) {
-            println(agpToVersionsMap.entries)
-        }
-    }
-}
-
-fun getMaxAgp(branchRoot: Path): String {
-    initAgpToGradleMap(branchRoot)
-    return maxAgp
-}
-
-@Synchronized
-private fun initAgpToGradleMap(branchRoot: Path) {
-    if (!::agpToVersionsMap.isInitialized) {
-        val file = branchRoot.resolve(VERSION_MAPPING)
-        if (!file.isRegularFile()) {
-            printErrorAndTerminate("Missing AGP version mapping file at $file")
-        }
-
-        val lines = file
-            .readLines()
-            .asSequence()
-            .filter { !it.startsWith("#") }
-
-        agpToVersionsMap = lines
-            .map {
-                val values = it.split(";")
-                values[0] to VersionInfo(
-                    agp = values[0],
-                    gradle = values[1],
-                    kotlin = values[2]
-                )
-            }.toMap()
-
-        maxAgp = lines.map { it.split(";")[0] }.max()
-    }
-}
 
 /**
  * The compile SDK version for recipes
@@ -99,12 +48,12 @@ data class ConversionResult(val recipeData: RecipeData, val resultMode: ResultMo
  *  Converts the individual recipe, calculation the conversion mode by input parameters
  */
 class RecipeConverter(
-    val agpVersion: String?,
+    private val context: Context,
+    val agpVersion: FullAgpVersion?,
     repoLocation: String?,
     gradleVersion: String?,
     gradlePath: String?,
     private val mode: Mode,
-    branchRoot: Path,
     private val generateWrapper: Boolean = true,
 ) {
     private val converter: Converter
@@ -116,20 +65,20 @@ class RecipeConverter(
     init {
         converter = when (mode) {
             Mode.WORKINGCOPY -> {
-                WorkingCopyConverter(branchRoot)
+                WorkingCopyConverter(context)
             }
 
             Mode.SOURCE -> {
-                SourceConverter(branchRoot)
+                SourceConverter(context)
             }
 
             Mode.RELEASE -> {
                 ReleaseConverter(
+                    context = context,
                     agpVersion = agpVersion ?: printErrorAndTerminate("Must specify the AGP version for release"),
                     gradleVersion = gradleVersion,
                     repoLocation = repoLocation,
                     gradlePath = gradlePath,
-                    branchRoot = branchRoot,
                 )
             }
         }
@@ -147,7 +96,7 @@ class RecipeConverter(
             printErrorAndTerminate("Source $source is not a directory!")
         }
 
-        val recipeData = RecipeData.loadFrom(source, mode)
+        val recipeData = RecipeData.loadFrom(source, mode, context)
 
         val recipeDestination = destination.resolve(recipeData.destinationFolder)
 

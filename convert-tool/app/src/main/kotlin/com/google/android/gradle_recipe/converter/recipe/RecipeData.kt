@@ -16,8 +16,10 @@
 
 package com.google.android.gradle_recipe.converter.recipe
 
-import com.github.rising3.semver.SemVer
+import com.google.android.gradle_recipe.converter.context.Context
+import com.google.android.gradle_recipe.converter.converters.FullAgpVersion
 import com.google.android.gradle_recipe.converter.converters.RecipeConverter
+import com.google.android.gradle_recipe.converter.converters.ShortAgpVersion
 import com.google.android.gradle_recipe.converter.printErrorAndTerminate
 import org.tomlj.Toml
 import org.tomlj.TomlParseResult
@@ -35,25 +37,30 @@ class RecipeData private constructor(
     val indexName: String,
     /** the name of the folder that should contain the recipe */
     val destinationFolder: String,
-    val minAgpVersion: String,
-    val maxAgpVersion: String?,
+    val minAgpVersion: FullAgpVersion,
+    val maxAgpVersion: ShortAgpVersion?,
     val tasks: List<String>,
+    val validationTasks: List<String>?,
     val keywords: List<String>,
 ) {
-    fun isCompliantWithAgp(agpVersion: String): Boolean {
+    fun isCompliantWithAgp(agpVersion: FullAgpVersion): Boolean {
         val min = minAgpVersion
         val max = maxAgpVersion
 
         return if (max != null) {
-            SemVer.parse(agpVersion) >= SemVer.parse(min) && SemVer.parse(agpVersion) <= SemVer.parse(max)
+            agpVersion >= min && agpVersion.toShort() <= max
         } else {
             // when maxAgpVersion is not specified
-            SemVer.parse(agpVersion) >= SemVer.parse(min)
+            agpVersion >= min
         }
     }
 
     companion object {
-        fun loadFrom(recipeFolder: Path, mode: RecipeConverter.Mode): RecipeData {
+        fun loadFrom(
+            recipeFolder: Path,
+            mode: RecipeConverter.Mode,
+            context: Context
+        ): RecipeData {
             val toml = recipeFolder.resolve(RECIPE_METADATA_FILE)
             val parseResult: TomlParseResult = Toml.parse(toml)
 
@@ -89,19 +96,30 @@ class RecipeData private constructor(
                 recipeFolder.name
             }
 
+            val minAgpString = parseResult.getString("agpVersion.min")
+                ?: printErrorAndTerminate("Did not find mandatory 'agpVersion.min' in $toml")
+
+            val minAgpVersion = ShortAgpVersion.ofOrNull(minAgpString)?.let {
+                context.getPublishedAgp(it)
+            } ?: FullAgpVersion.of(minAgpString)
+
+            val maxAgpString = parseResult.getString("agpVersion.max")
+            val maxAgpVersion = if (maxAgpString != null) {
+                ShortAgpVersion.ofOrNull(maxAgpString)
+                    ?: printErrorAndTerminate("unable to parse 'agpVersion.max' with value '$maxAgpString'")
+            } else null
+
             return RecipeData(
                 indexName = indexName,
                 destinationFolder = destinationFolder,
-                minAgpVersion = parseResult.getString("agpVersion.min")
-                    ?: printErrorAndTerminate("Did not find mandatory 'agpVersion.min' in $toml"),
-                maxAgpVersion = parseResult.getString("agpVersion.max"),
+                minAgpVersion = minAgpVersion,
+                maxAgpVersion = maxAgpVersion,
                 tasks = parseResult.getArray("gradleTasks.tasks")?.toList()?.map { it as String } ?: emptyList(),
+                validationTasks = parseResult.getArray("gradleTasks.validationTasks")?.toList()?.map { it as String },
                 keywords = parseResult.getArray("indexMetadata.index")?.toList()?.map { it as String } ?: emptyList()
             )
         }
     }
 }
-
-fun String.toMajorMinor(): String = SemVer.parse(this).run { "${this.major}.${this.minor}" }
 
 fun isRecipeFolder(folder: Path) = File(folder.toFile(), RECIPE_METADATA_FILE).exists()
