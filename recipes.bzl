@@ -95,6 +95,7 @@ def recipe_test(
                             "-Dname=" + name,
                             "-Dversion_mappings_file=$(location :version_mappings.txt)",
                             "-Dall_tested_agp_versions=" + ",".join(test_scenarios),
+                            "-Dconvert_debug=true",
                         ] +
                         (["-Djdk_version=" + str(test_scenarios[agp_version].get("jdk_version"))] if test_scenarios[agp_version].get("jdk_version") else []) +
                         (select({
@@ -102,7 +103,10 @@ def recipe_test(
                             "//conditions:default": ["-Dagp_version=" + DEV_BUILD_VERSION],
                         }) if agp_version == "ToT" else ["-Dagp_version=" + agp_version]),
             data = native.glob(
-                ["recipes/" + name + "/**"],
+                [
+                    "recipes/" + name + "/**",
+                    "gradle-resources/**",
+                ],
             ) + [
                 "//tools/base/build-system:android_platform_for_tests",
                 "version_mappings.txt",

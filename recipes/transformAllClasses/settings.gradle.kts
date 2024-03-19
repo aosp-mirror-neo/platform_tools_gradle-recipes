@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-rootProject.name = "transformCalsses"
+rootProject.name = "transformClasses"
 
 pluginManagement {
     includeBuild("build-logic")

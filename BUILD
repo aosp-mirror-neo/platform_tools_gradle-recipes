@@ -10,7 +10,6 @@ kotlin_library(
     ]),
     lint_baseline = "lint_baseline.xml",
     deps = [
-        "@maven//:com.github.rising3.semver",
         "@maven//:com.google.guava.guava",
         "@maven//:com.squareup.okhttp3.okhttp",
         "@maven//:org.gradle.gradle-tooling-api",
@@ -29,7 +28,6 @@ kotlin_test(
     deps = [
         ":convert_tool",
         "//tools/base/testutils:tools.testutils",
-        "@maven//:com.github.rising3.semver",
         "@maven//:com.google.truth.truth",
         "@maven//:junit.junit",
     ],
@@ -138,4 +136,20 @@ recipe_test(
 
 recipe_test(
     name = "legacyTaskBridging",
+)
+
+recipe_test(
+    name = "testFixtures",
+)
+
+recipe_test(
+    name = "asmTransformClasses",
+)
+
+recipe_test(
+    name = "transformDirectory",
+)
+
+recipe_test(
+    name = "transformMultiple",
 )
