@@ -15,26 +15,27 @@
  */
 
 plugins {
-    `java-gradle-plugin`
-    alias(libs.plugins.kotlin.jvm)
+    alias(libs.plugins.android.application)
+    alias(libs.plugins.kotlin.android)
+    id("android.recipes.variant_output")
 }
 
-java {
-    toolchain {
-        languageVersion.set(JavaLanguageVersion.of(17))
+android {
+    namespace = "com.example.android.recipes.variant_output"
+    compileSdk = $COMPILE_SDK
+    defaultConfig {
+        minSdk = $MINIMUM_SDK
+        targetSdk = $COMPILE_SDK
     }
-}
 
-dependencies {
-    compileOnly(libs.android.gradlePlugin.api)
-    implementation(gradleKotlinDsl())
-}
-
-gradlePlugin {
-    plugins {
-        create("WorkerEnabledTransformation") {
-            id = "android.recipes.workerEnabledTransformation"
-            implementationClass = "CustomPlugin"
+    // Specify one flavor dimension and two product flavors
+    flavorDimensions += "dimension1"
+    productFlavors {
+        create("flavor1") {
+            dimension = "dimension1"
+        }
+        create("flavor2") {
+            dimension = "dimension1"
         }
     }
 }

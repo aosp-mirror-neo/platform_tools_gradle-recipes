@@ -32,8 +32,8 @@ dependencies {
 
 gradlePlugin {
     plugins {
-        create("WorkerEnabledTransformation") {
-            id = "android.recipes.workerEnabledTransformation"
+        create("customPlugin") {
+            id = "android.recipes.variant_output"
             implementationClass = "CustomPlugin"
         }
     }

@@ -14,27 +14,20 @@
  * limitations under the License.
  */
 
-plugins {
-    `java-gradle-plugin`
-    alias(libs.plugins.kotlin.jvm)
-}
+rootProject.name = "build-logic"
 
-java {
-    toolchain {
-        languageVersion.set(JavaLanguageVersion.of(17))
+pluginManagement {
+    repositories {
+        $AGP_REPOSITORY
+        $PLUGIN_REPOSITORIES
     }
 }
 
-dependencies {
-    compileOnly(libs.android.gradlePlugin.api)
-    implementation(gradleKotlinDsl())
-}
-
-gradlePlugin {
-    plugins {
-        create("WorkerEnabledTransformation") {
-            id = "android.recipes.workerEnabledTransformation"
-            implementationClass = "CustomPlugin"
-        }
+dependencyResolutionManagement {
+    repositories {
+$AGP_REPOSITORY
+$DEPENDENCY_REPOSITORIES
     }
 }
+
+include(":plugins")
