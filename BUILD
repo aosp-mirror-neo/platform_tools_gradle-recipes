@@ -157,3 +157,7 @@ recipe_test(
 recipe_test(
     name = "variantOutput",
 )
+
+recipe_test(
+    name = "registerPreBuild",
+)

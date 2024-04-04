@@ -26,7 +26,7 @@ import java.io.File
 import com.android.build.api.variant.AndroidComponentsExtension
 
 /**
- * This custom plugin will register tree tasks that will update and veridy Android manifest.
+ * This custom plugin will register tree tasks that will update and verify Android manifest.
  */
 class CustomPlugin : Plugin<Project> {
     override fun apply(project: Project) {
