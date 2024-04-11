@@ -67,7 +67,7 @@ To run the tool from the root folder, you can use `convert.sh`.
 Editing a recipe in Android Studio requires converting a recipe into `workingcopy` mode:
 
 ```
-./convert.sh --mode workingcopy --source recipes/<name> --destination workingcopies/
+./convert.sh convert --mode workingcopy --source recipes/<name> --destination workingcopies/
 ```
 
 This will convert the recipe into a new folder `workingcopies/<name>`. You can now open
@@ -130,7 +130,7 @@ Once the recipe is updated and validated, it can be converted back to its `sourc
 
 
 ```
-./convert.sh --mode source --source workingcopies/<name> --destination recipes/ --overwrite
+./convert.sh convert --mode source --source workingcopies/<name> --destination recipes/ --overwrite
 ```
 
 The `--overwrite` option is necessary unless you delete `recipes/<name>` first. This will
@@ -145,7 +145,7 @@ To get started adding a new recipe, we have 2 different templates:
 
 First, create a working copy:
 ```
-./convert.sh --mode workingcopy --source templates/TemplateRecipe --destination workingcopies/
+./convert.sh convert --mode workingcopy --source templates/TemplateRecipe --destination workingcopies/
 ```
 
 Then, write your recipe, generally starting with the plugin class (`CustomPlugin.kt` or `CustomSettings.kt`).
