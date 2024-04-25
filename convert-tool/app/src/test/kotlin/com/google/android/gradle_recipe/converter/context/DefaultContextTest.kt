@@ -65,9 +65,9 @@ class DefaultContextTest {
                     # mapping of AGP versions to Gradle and Kotlin Versions, separated by ';'
                     8.1;8.0;1.8.10
                     8.2;8.2;1.8.10
-                    8.3;8.4;1.9.20
-                    8.4;8.6;1.9.20
-                    8.5;8.6;1.9.20
+                    8.3;8.4;1.9.22
+                    8.4;8.6;1.9.22
+                    8.5;8.6;1.9.22
                 """.trimIndent()
             )
     }

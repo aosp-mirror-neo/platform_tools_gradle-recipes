@@ -108,7 +108,7 @@ class DefaultContext(
 
         val response = client.newCall(request).execute()
 
-        return response.body()?.byteStream() ?: throw RuntimeException("Failed to download AGP version information from gmaven")
+        return response.body?.byteStream() ?: throw RuntimeException("Failed to download AGP version information from gmaven")
     }
 
     companion object {

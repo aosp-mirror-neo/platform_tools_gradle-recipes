@@ -1,6 +1,6 @@
 load("//tools/base/bazel:kotlin.bzl", "kotlin_library", "kotlin_test")
 load("//tools/base/bazel:maven.bzl", "maven_repository")
-load("//tools/base/build-system/integration-test:common-dependencies.bzl", "KGP_1_8_10", "KGP_1_9_20")
+load("//tools/base/build-system/integration-test:common-dependencies.bzl", "KGP_1_8_10", "KGP_1_9_22")
 load(":recipes.bzl", "recipe_test")
 
 kotlin_library(
@@ -47,8 +47,8 @@ kotlin_library(
 
 # for testing against older KGP
 maven_repository(
-    name = "kotlin_1_9_20",
-    artifacts = KGP_1_9_20,
+    name = "kotlin_1_9_22",
+    artifacts = KGP_1_9_22,
     visibility = [":__subpackages__"],
 )
 

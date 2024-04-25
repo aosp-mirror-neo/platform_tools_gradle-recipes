@@ -6,7 +6,7 @@ tomlj = "1.0.0"
 gradle-api = "8.4"
 slf4j = "1.7.10"
 truth = "1.1.3"
-okhttp = "3.12.0"
+okhttp = "4.12.0"
 
 [libraries]
 kotlin-bom = { module = "org.jetbrains.kotlin:kotlin-bom", version.ref = "kotlin" }

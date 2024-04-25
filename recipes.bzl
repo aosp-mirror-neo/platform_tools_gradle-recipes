@@ -52,7 +52,7 @@ def recipe_test(
             "gradle_path": "$(location //tools/base/build-system:gradle-distrib-8.4)",
             "manifest_repos": [
                 "//tools/base/build-system/previous-versions:8.3.1",
-                ":kotlin_1_9_20",
+                ":kotlin_1_9_22",
                 "//tools/base/build-system:gradle-8.4-runtime-maven",
             ],
             "zip_repos": [],
@@ -67,7 +67,7 @@ def recipe_test(
             "gradle_path": "$(location //tools/base/build-system:gradle-distrib)",
             "manifest_repos": [
                 "//tools/base/build-system/integration-test:kotlin_gradle_plugin_prebuilts",
-                ":kotlin_1_9_20",
+                ":kotlin_1_9_22",
                 "//tools/base/build-system:gradle-runtime-maven",
             ],
             "zip_repos": ["//tools/base/build-system:android_gradle_plugin"],
