@@ -62,6 +62,21 @@ def recipe_test(
             ],
             "jdk_version": 17,
         },
+        "8.4.0": {
+            "name": name + "_8_4_0",
+            "gradle_path": "$(location //tools/base/build-system:gradle-distrib-8.6)",
+            "manifest_repos": [
+                "//tools/base/build-system/previous-versions:8.4.0",
+                ":kotlin_1_9_22",
+                "//tools/base/build-system:gradle-8.6-runtime-maven",
+            ],
+            "zip_repos": [],
+            "data": [
+                "//prebuilts/studio/sdk:build-tools/34.0.0",
+                "//tools/base/build-system:gradle-distrib-8.6",
+            ],
+            "jdk_version": 17,
+        },
         "ToT": {
             "name": name,
             "gradle_path": "$(location //tools/base/build-system:gradle-distrib)",
