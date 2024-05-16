@@ -63,7 +63,7 @@ recipe_test(
 )
 
 recipe_test(
-    name = "addCustomAsset",
+    name = "addGeneratedSourceFolder",
 )
 
 recipe_test(
@@ -115,7 +115,7 @@ recipe_test(
 )
 
 recipe_test(
-    name = "addCustomSourceFolders",
+    name = "addCustomSourceType",
 )
 
 recipe_test(

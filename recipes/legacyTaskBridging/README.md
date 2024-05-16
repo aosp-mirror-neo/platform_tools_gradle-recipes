@@ -68,8 +68,3 @@ To run the examples, you can just do:
 ```
 ./gradlew debugVerifyAsset
 ```
-and the output should be:
-```
-> Task :app:debugVerifyAsset
-Success: Found asset in resulting APK !
-```

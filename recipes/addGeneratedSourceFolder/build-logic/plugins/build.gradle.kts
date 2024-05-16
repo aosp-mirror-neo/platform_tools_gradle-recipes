@@ -14,22 +14,27 @@
  * limitations under the License.
  */
 
-rootProject.name = "addCustomDourceFolders"
+plugins {
+    `java-gradle-plugin`
+    alias(libs.plugins.kotlin.jvm)
+}
 
-pluginManagement {
-    includeBuild("build-logic")
-    repositories {
-        $AGP_REPOSITORY
-        $PLUGIN_REPOSITORIES
+java {
+    toolchain {
+        languageVersion.set(JavaLanguageVersion.of(17))
     }
 }
 
-dependencyResolutionManagement {
-    repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
-    repositories {
-        $AGP_REPOSITORY
-        $DEPENDENCY_REPOSITORIES
-    }
+dependencies {
+    compileOnly(libs.android.gradlePlugin.api)
+    implementation(gradleKotlinDsl())
 }
 
-include(":app")
+gradlePlugin {
+    plugins {
+        create("customPlugin") {
+            id = "android.recipes.custom_plugin"
+            implementationClass = "CustomPlugin"
+        }
+    }
+}

@@ -14,27 +14,22 @@
  * limitations under the License.
  */
 
-plugins {
-    alias(libs.plugins.android.application)
-    alias(libs.plugins.kotlin.android)
-    id("android.recipes.customSourceFolders")
-}
+rootProject.name = "addGeneratedSourceFolder"
 
-android {
-    namespace = "com.example.android.recipes.customSourceFolders"
-    compileSdk = $COMPILE_SDK
-    defaultConfig {
-       minSdk = $MINIMUM_SDK
-       targetSdk = $COMPILE_SDK
+pluginManagement {
+    includeBuild("build-logic")
+    repositories {
+        $AGP_REPOSITORY
+        $PLUGIN_REPOSITORIES
     }
 }
 
-java {
-    toolchain {
-        languageVersion.set(JavaLanguageVersion.of(17))
+dependencyResolutionManagement {
+    repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
+    repositories {
+        $AGP_REPOSITORY
+        $DEPENDENCY_REPOSITORIES
     }
 }
 
-androidComponents {
-    registerSourceType("toml")
-}
+include(":app")

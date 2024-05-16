@@ -54,9 +54,15 @@ class CustomPlugin : Plugin<Project> {
                     it.addGeneratedSourceDirectory(addSourceTaskProvider, AddCustomSources::outputFolder)
                 }
 
-                project.tasks.register<DisplayAllSources>("${variant.name}DisplayAllSources") {
-                    //to print all directories that are part of `toml` source type
+                // -- Verification --
+                // the following is just to validate the recipe and is not actually part of the recipe itself
+                val taskName = "${variant.name}DisplayAllSources"
+                project.tasks.register<DisplayAllSources>(taskName) {
+                    // to print all directories that are part of `toml` source type
+                    // `variant.sources.getByName("toml")` here and any other custom source is of type
+                    // SourceDirectories.Flat
                     sourceFolders.set(variant.sources.getByName("toml").all)
+                    output.set(project.layout.buildDirectory.dir("intermediates/$taskName"))
                 }
             }
         }

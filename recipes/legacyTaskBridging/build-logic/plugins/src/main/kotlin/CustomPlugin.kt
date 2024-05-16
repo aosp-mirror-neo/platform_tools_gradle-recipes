@@ -123,13 +123,9 @@ abstract class VerifyAssetTask : DefaultTask() {
 
     @TaskAction
     fun taskAction() {
-        File(assets.get().asFile, "custom_asset.txt").let {
-            if (it.exists()) {
-                println("Found ${it} in merged assets folder")
-            } else {
-                throw IllegalStateException("custom_asset.txt file not " +
-                        "present in merged asset folder :  ${assets.get().asFile}")
-            }
+        if (!File(assets.get().asFile, "custom_asset.txt").exists()) {
+            throw RuntimeException("custom_asset.txt file not present in merged asset folder: " +
+                "${assets.get().asFile}")
         }
     }
 }

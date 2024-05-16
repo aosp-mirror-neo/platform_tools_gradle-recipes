@@ -14,22 +14,27 @@
  * limitations under the License.
  */
 
-rootProject.name = "addCustomAsset"
+plugins {
+    alias(libs.plugins.android.application)
+    alias(libs.plugins.kotlin.android)
+    id("android.recipes.custom_plugin")
+}
 
-pluginManagement {
-    includeBuild("build-logic")
-    repositories {
-        $AGP_REPOSITORY
-        $PLUGIN_REPOSITORIES
+android {
+    namespace = "com.example.android.recipes.recipe"
+    compileSdk = $COMPILE_SDK
+    defaultConfig {
+       minSdk = $MINIMUM_SDK
+       targetSdk = $COMPILE_SDK
     }
 }
 
-dependencyResolutionManagement {
-    repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
-    repositories {
-        $AGP_REPOSITORY
-        $DEPENDENCY_REPOSITORIES
+java {
+    toolchain {
+        languageVersion.set(JavaLanguageVersion.of(17))
     }
 }
 
-include(":app")
+androidComponents {
+    registerSourceType("toml")
+}

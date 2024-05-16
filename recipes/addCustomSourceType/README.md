@@ -4,9 +4,21 @@ This sample shows how to add a new custom source folders to the Variant for newl
 The source folder will not be used by any AGP tasks (since we do not know about it), however, it can
 be used by plugins and tasks participating into the Variant API callbacks.
 
+In this recipe, a custom source type is registered in the app's [build.gradle.kts](app/build.gradle.kts):
+
+```
+androidComponents {
+    registerSourceType("toml")
+}
+```
+
 To access the custom sources, you just need to use
 `sourceFolders.set(variant.sources.getByName("toml").getAll())`
 which can be used as [Task] input directly.
+
+There are two types of [`SourceDirectories`](https://developer.android.com/reference/tools/gradle-api/current/com/android/build/api/variant/SourceDirectories):
+[`Flat`](https://developer.android.com/reference/tools/gradle-api/current/com/android/build/api/variant/SourceDirectories.Flat) and [`Layered`](https://developer.android.com/reference/tools/gradle-api/8.0/com/android/build/api/variant/SourceDirectories.Layered).
+Custom sources are always of type `Flat`, meaning the directories are stored in type `Provider<Collection<Directory>>`.
 
 To add a folder which content will be generated during execution time by [Task], you need
 to use  [SourceDirectories.addGeneratedSourceDirectory] and the pointer to the output folder

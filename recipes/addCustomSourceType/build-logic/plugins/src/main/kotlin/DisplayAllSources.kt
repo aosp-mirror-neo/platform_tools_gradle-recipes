@@ -26,6 +26,12 @@ import java.nio.file.Path
 
 abstract class DisplayAllSources: DefaultTask() {
 
+    // In order for the task to be up-to-date when the inputs have not changed,
+    // the task must declare an output, even if it's not used. Tasks with no
+    // output are always run regardless of whether the inputs changed
+    @get:OutputDirectory
+    abstract val output: DirectoryProperty
+
     @get:InputFiles
     abstract val sourceFolders: ListProperty<Directory>
 

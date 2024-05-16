@@ -26,9 +26,11 @@ index = [
     "Call chains/androidComponents.onVariants {}",
     "Call chains/variant.sources.*.addGeneratedSourceDirectory()",
     "Call chains/variant.sources.*.addStaticSourceDirectory()",
+    "Call chains/variant.sources.*.all",
     "APIs/SourceDirectories.addGeneratedSourceDirectory()",
     "APIs/SourceDirectories.addStaticSourceDirectory()",
     "APIs/Component.sources",
     "registerSourceType",
     "SourceDirectories.add",
+    "SourceDirectories.Flat"
 ]

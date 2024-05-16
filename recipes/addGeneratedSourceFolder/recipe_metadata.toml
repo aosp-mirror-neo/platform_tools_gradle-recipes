@@ -13,7 +13,7 @@ min = "8.1.0"
 # Relevant Gradle tasks to run per recipe
 [gradleTasks]
 tasks = [
-    "debugVerifyAsset"
+    ":app:verifyDebugAsset"
 ]
 
 # All the relevant metadata fields to create an index based on language/API/etc'
@@ -28,6 +28,8 @@ index = [
     "APIs/Component.artifacts",
     "APIs/Component.sources",
     "Call chains/variant.sources.*.addGeneratedSourceDirectory()",
+    "Call chains/variant.sources.*.all",
     "Call chains/variant.artifacts.get()",
-    "Call chains/androidComponents.onVariants {}"
+    "Call chains/androidComponents.onVariants {}",
+    "SourceDirectories.Layered"
 ]
