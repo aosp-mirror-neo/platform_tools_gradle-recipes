@@ -39,7 +39,9 @@ abstract class ManifestTransformerTask: DefaultTask() {
 
         val gitVersion = gitInfoFile.get().asFile.readText()
         var manifest = mergedManifest.asFile.get().readText()
-        manifest = manifest.replace("android:targetSdkVersion=\"34\"", "android:targetSdkVersion=\"$gitVersion\"")
+        manifest = manifest.replace("package=\"com.example.android.recipes.transformManifest\" >", "" +
+                "package=\"com.example.android.recipes.transformManifest\"\n" +
+                "android:versionName=\"$gitVersion\" >")
         updatedManifest.get().asFile.writeText(manifest)
     }
 }

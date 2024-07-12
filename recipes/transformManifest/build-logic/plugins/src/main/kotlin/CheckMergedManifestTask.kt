@@ -48,7 +48,7 @@ abstract class CheckMergedManifestTask : DefaultTask() {
 
         val fileContents = mergedManifest.get().asFile.readText()
         val gitVersion = gitInfoFile.get().asFile.readText()
-        if (fileContents.contains("android:targetSdkVersion=\"$gitVersion\"")) {
+        if (fileContents.contains("android:versionName=\"$gitVersion\"")) {
             return
         } else {
             throw RuntimeException("Merged manifest does not contains transformed data.")
