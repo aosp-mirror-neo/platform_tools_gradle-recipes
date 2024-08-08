@@ -161,3 +161,11 @@ recipe_test(
 recipe_test(
     name = "registerPreBuild",
 )
+
+recipe_test(
+    name = "listenToMultipleArtifact",
+)
+
+recipe_test(
+    name = "appendToScopedArtifacts",
+)

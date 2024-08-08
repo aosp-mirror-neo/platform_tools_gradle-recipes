@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 The Android Open Source Project
+ * Copyright 2024 The Android Open Source Project
  *
  *   Licensed under the Apache License, Version 2.0 (the "License");
  *   you may not use this file except in compliance with the License.
@@ -14,7 +14,7 @@
  *   limitations under the License.
  */
 
-import com.android.build.api.artifact.SingleArtifact
+import com.android.build.api.artifact.MultipleArtifact
 import com.android.build.api.variant.ApplicationAndroidComponentsExtension
 import com.android.build.gradle.AppPlugin
 import org.gradle.api.DefaultTask
@@ -22,7 +22,6 @@ import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.file.DirectoryProperty
 import org.gradle.api.provider.Property
-import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.InputDirectory
 import org.gradle.api.tasks.TaskAction
 import org.gradle.configurationcache.extensions.capitalized
@@ -46,38 +45,42 @@ class CustomPlugin : Plugin<Project> {
             // Registers a callback to be called, when a new variant is configured
             androidComponents.onVariants { variant ->
 
-                // create a task that will be responsible for copying the APKs
-                val copyTask = project.tasks.register<CopyApk>("copyApksFor${variant.name}") {
+                // -- Setup --
+                // the following is done for the sake of the recipe only, in order to add directories to
+                // MultipleArtifact.NATIVE_DEBUG_METADATA so that there is something to copy
+                variant.artifacts.addStaticDirectory(
+                    MultipleArtifact.NATIVE_DEBUG_METADATA,
+                    project.layout.projectDirectory.dir("nativeDebugMetadataDir")
+                )
 
-                    // set the output only. the input will be automatically provided via the
-                    // wiring mechanism
-                    output.set(project.layout.buildDirectory.dir("outputs/renamed_apks/${variant.name}"))
-
-                    // provide an instance of the artifact loader. This is necessary for
-                    // some artifacts. See Artifact.ContainsMany
-                    builtArtifactsLoader.set(variant.artifacts.getBuiltArtifactsLoader())
+                // create a task that will be responsible for copying and renaming a native debug metadata file
+                val copyTaskName = "copyNativeDebugMetadataFor${variant.name.capitalized()}"
+                val copyTask = project.tasks.register<CopyNativeDebugMetadataTask>(copyTaskName) {
+                    // set the output only. the input will be automatically provided via the wiring mechanism
+                    output.set(project.layout.buildDirectory.dir(
+                        "renamed_intermediates/native_debug_metadata/${variant.name}")
+                    )
                 }
 
                 // Wire the task to respond to artifact creation
-                variant.artifacts.use(copyTask).wiredWith {
-                    it.input
-                }.toListenTo(SingleArtifact.APK)
-
+                variant.artifacts.use(copyTask).wiredWithMultiple {
+                    it.debugMetadataDirectories
+                }.toListenTo(MultipleArtifact.NATIVE_DEBUG_METADATA)
 
                 // -- Verification --
-                // the following is just to validate the recipe and is not actually
-                // part of the recipe itself
-                project.tasks.register<TemplateTask>("validate${variant.name.capitalized()}") {
+                // the following is just to validate the recipe and is not actually part of the recipe itself
+                project.tasks.register<ValidateTask>("validate${variant.name.capitalized()}") {
                     // The input of the validation task should be the output of the copy task.
                     // The normal way to do this would be:
                     //     input.set(copyTask.flatMap { it.output }
-                    // However, doing this will force running the task when we want it to run
-                    // automatically when the normal APK packaging task run.
+                    // However, doing this will force running the copy task when we want it to run
+                    // automatically when the normal AGP tasks run.
                     // So we set the input manually, and the validation task will have to be called
                     // separately (in a separate Gradle execution or Gradle will detect the
                     // lack of dependency between the 2 tasks and complain).
-                    input.set(project.layout.buildDirectory.dir("outputs/renamed_apks/${variant.name}"))
-                    variantName.set(variant.name)
+                    input.set(project.layout.buildDirectory.dir(
+                        "renamed_intermediates/native_debug_metadata/${variant.name}")
+                    )
                 }
             }
         }
@@ -87,24 +90,16 @@ class CustomPlugin : Plugin<Project> {
 /**
  * Validation task to verify the behavior of the recipe
  */
-abstract class TemplateTask : DefaultTask() {
+abstract class ValidateTask : DefaultTask() {
+
     @get:InputDirectory
     abstract val input: DirectoryProperty
 
-    @get:Input
-    abstract val variantName: Property<String>
-
     @TaskAction
     fun taskAction() {
-        // manually look for the content of the folder
-        checkFile("${variantName.get()}-Feb2024-12.apk")
-        checkFile("output-metadata.json")
-    }
-
-    private fun checkFile(name: String) {
-        val file = input.get().file(name).asFile
-        if (file.isFile.not()) {
-            throw RuntimeException("Expected file missing: $file")
+        val renamedNativeDebugMetadataFile = input.get().file("renamed_test_file.dbg").asFile
+        if (!renamedNativeDebugMetadataFile.exists()) {
+            throw RuntimeException("Expected file missing: $renamedNativeDebugMetadataFile")
         }
-   }
+    }
 }

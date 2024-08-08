@@ -62,7 +62,7 @@ abstract class ModifyClassesTask: DefaultTask() {
         val jarOutput = JarOutputStream(BufferedOutputStream(FileOutputStream(
             output.get().asFile
         )))
-        // we just copying classes fromjar files without modification
+        // copy classes from jar files without modification
         allJars.get().forEach { file ->
             println("handling " + file.asFile.getAbsolutePath())
             val jarFile = JarFile(file.asFile)
