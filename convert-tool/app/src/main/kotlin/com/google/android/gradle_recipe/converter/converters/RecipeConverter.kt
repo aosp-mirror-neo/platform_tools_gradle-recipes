@@ -31,7 +31,7 @@ import kotlin.io.path.isRegularFile
 /**
  * The compile SDK version for recipes
  */
-const val compileSdkVersion = "34"
+const val compileSdkVersion = "35"
 
 /**
  * The minimum SDK version for recipes
