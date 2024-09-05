@@ -169,3 +169,7 @@ recipe_test(
 recipe_test(
     name = "appendToScopedArtifacts",
 )
+
+recipe_test(
+    name = "disableTests",
+)
