@@ -155,7 +155,7 @@ def recipe_test(
                     "gradle-resources/**",
                 ],
             ) + [
-                "//tools/base/build-system:android_platform_for_tests",
+                "//tools/base/build-system:android_platform_for_agp_unit_tests",
                 "version_mappings.txt",
             ] + manifest_repos + zip_repos + repo_files + test_scenarios[agp_version]["data"] + _jdkRuntime(test_scenarios[agp_version].get("jdk_version")),
             test_class = "com.android.tools.gradle.GradleRecipeTest",
