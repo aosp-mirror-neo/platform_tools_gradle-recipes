@@ -173,3 +173,7 @@ recipe_test(
 recipe_test(
     name = "disableTests",
 )
+
+recipe_test(
+    name = "applyFusedLibraryPlugin",
+)
