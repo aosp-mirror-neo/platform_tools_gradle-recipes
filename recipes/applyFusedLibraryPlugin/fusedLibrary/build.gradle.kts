@@ -26,8 +26,7 @@ androidFusedLibrary {
     // If aarMetadata is not explicitly specified,
     // aar metadata will be generated based on dependencies.
     aarMetadata {
-        minAgpVersion = "8.9.0"
-        minCompileSdk = 34
+        minCompileSdk = 19
         minCompileSdkExtension = 1
     }
 }

@@ -53,7 +53,6 @@ android {
 
 dependencies {
     implementation(project(":fusedLibrary"))
-    implementation(libs.mycompany.fusedlibrary)
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)
     implementation(libs.material)

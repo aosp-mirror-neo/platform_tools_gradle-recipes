@@ -16,8 +16,10 @@ tasks = [
     ":fusedLibrary:assemble",
     ":fusedLibrary:report",
     ":fusedLibrary:generatePomFileForMavenPublication",
-    ":fusedLibrary:generateRepo",
-    ":androidLib3:generateRepo"
+    ":fusedLibrary:publishReleasePublicationToMyrepoRepository",
+    ":fusedLibrary:publishReleasePublicationToMyrepoRepository",
+    ":app:testDebugUnitTest",
+    ":app:connectedDebugAndroidTest"
 ]
 
 # All the relevant metadata fields to create an index based on language/API/etc'

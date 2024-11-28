@@ -13,10 +13,14 @@ published artifacts created by the plugin; there is no guarantee of correctness.
 As an early adopter, please be aware that there may be frequent breaking changes that may require
 you to make changes to your project.
 
+The recipe may not be updated as frequently as the plugin, so please ensure you are using the most
+recent version of Android Studio Canary and the Android Gradle Plugin alpha releases.
+
 ### This recipe
 
 This project aims to provide a non-exhaustive, but common examples of plugin usage for consumption
 by other libraries.
+<pre>
 ┌─────────────────────────────────────────┐
 │             :app                        │
 │               ▲                         │
@@ -29,7 +33,7 @@ by other libraries.
 │         │            │                  │
 │ :androidLib3 com.google.code.gson:gson* │
 └─────────────────────────────────────────┘
-
+</pre>
 This diagram shows an overview of the relevant project dependency structure. 
 * include dependency of :fusedLibrary 
 
@@ -141,7 +145,7 @@ Generating a maven repository with the fused library
 ```
 2. Execute the task for creating the repository `./gradlew fusedLibrary:publishReleasePublicationToMyrepoRepository`
 3. As androidLib3 is a project dependency of the fused library, that also needs to be published to 
-the repository`./gradlew androidLib3:publishReleasePublicationToMyrepoRepository`
+the repository`./gradlew androidLib3:publishMavenPublicationToMyrepoRepository`
 4. Note: :app has already configured dependency substitution that prefers the published local repo 
 artifacts over the :fusedLibrary project itself, so :app now automatically depends on the correct 
 artifacts.
@@ -153,14 +157,14 @@ Done.
 |---------|:--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | include | Specifies components to be fused into the final artifact. Included components are resolvable at runtime. This configuration is not transitive, therefore dependencies will not be included in the fused artifact. There is no support for file dependencies excluding libs/jars. Databinding dependencies are prohibited. |
 
-### How can I report issues?
+### Report Issues
 
 This plugin remains in early stages, and there may be corner cases that have not been fully tested
 or developed.
 
-See open public issues at this link [open issues](https://issuetracker.google.com/issues?q=hotlistid:4053459%20status:open)
+See open public issues at this link [open issues](https://issuetracker.google.com/issues?q=hotlistid:4053459)
 
-Follow the below steps and use this [link to **file new bugs**](https://issuetracker.google.com/issues/new?hotlistIds=4053459&component=147324&template=295401)
+Follow the below steps and use this [link to **file new bugs**](https://issuetracker.google.com/createIssue?title=%5Bfused+lib+-+public%5D+%3CIssue+Name+Here%3E&cc=lukeedgar%40google.com%2C+android-gradle%40google.com&description=Please+include+all+of+the+following%3A%0A1.+Steps+to+reproduce%0A2.+A+paste+of+the+exception%0A3.+run+%60.%2Fgradlew+%3A%3Cfused+library+module%5C%3E%3Areport%60+and+paste+the+contents+of+%0A%60%3Cmy+library+module%5C%3Ebuild%2Freports%2Ffused_library_report%2Fsingle%2Freport.json%60%0A4.Also+consider+running+%60gradle+%3A%3Cfused+library+module%3E%3Adependencies%60+if+dependency+information+is+relevant%0A5.%5Boptional%5D+if+the+build+was+successful%2C+provide+a+copy+of+the+.aar&format=MARKDOWN&component=192709&type=BUG&priority=P2&severity=S2&hotlistIds=4053459&assignee=lukeedgar%40google.com)
 **or provide suggestions** for the Fused Library Plugin.
 
 When filing an issue, please include the following information:
