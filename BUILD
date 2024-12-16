@@ -41,6 +41,9 @@ kotlin_library(
     deps = [
         ":convert_tool",
         "//tools/base/bazel:gradle",
+        "//tools/base/common:tools.common",
+        "//tools/base/testutils:tools.testutils",
+        "@maven//:com.google.code.gson.gson",
         "@maven//:junit.junit",
     ],
 )

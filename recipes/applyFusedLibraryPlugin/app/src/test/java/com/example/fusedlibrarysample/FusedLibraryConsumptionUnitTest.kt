@@ -29,7 +29,7 @@ import org.junit.Assert.*
 class FusedLibraryConsumptionUnitTest {
 
     @Test
-    fun `test classes from included dependencies`() {
+    fun testClassesFromIncludedDependencies() {
         // Access symbols from local library dependencies
         val androidLib1Class = ClassFromAndroidLib1()
         val androidLib2Class = ClassFromAndroidLib2()
@@ -45,7 +45,7 @@ class FusedLibraryConsumptionUnitTest {
     }
 
     @Test
-    fun `test local lib jar dependencies are accessible`() {
+    fun testLocalLibJarDependenciesAreAccessible() {
         // Access class in local jar from fused library file dependencies
         // A_DoIExist is class from a libs jar file dependency
         // (fusedLibrary/libs/simple-jar-with-A_DoIExist-class.jar)
