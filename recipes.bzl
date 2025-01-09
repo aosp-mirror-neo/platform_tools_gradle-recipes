@@ -180,8 +180,8 @@ def recipe_test(
 
 def _jdkRuntime(jdk_version):
     if jdk_version == 17:
-        return ["//prebuilts/studio/jdk/jdk17:jdk17_runtime"]
+        return ["//prebuilts/studio/jdk/jdk17:java_runtime"]
     elif jdk_version == 11:
-        return ["//prebuilts/studio/jdk/jdk11:jdk11_runtime"]
+        return ["//prebuilts/studio/jdk/jdk11:java_runtime"]
     else:
-        return ["//prebuilts/studio/jdk/jdk17:jdk17_runtime"]
+        return ["//prebuilts/studio/jdk/jdk17:java_runtime"]
