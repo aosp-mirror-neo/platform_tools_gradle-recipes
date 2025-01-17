@@ -34,8 +34,9 @@ by other libraries.
 │ :androidLib3 com.google.code.gson:gson* │
 └─────────────────────────────────────────┘
 </pre>
-This diagram shows an overview of the relevant project dependency structure. 
-* include dependency of :fusedLibrary 
+This diagram shows an overview of the relevant project dependency structure.
+
+`*` indicates an `include` dependency of the `:fusedLibrary` module
 
 Example usages of classes, resources and other artifacts are demonstrated in the :app module unit
 and instrumentation tests.
@@ -48,16 +49,15 @@ and instrumentation tests.
 
 1. Apply the plugin
    gradle/libs.versions.toml append
-```kts
+```toml
 [plugins]
-...
 android-fusedlibrary = { id = "com.android.fusedlibrary", version.ref = "agp" }
 ```
 2. Create a new module. `File` > `New Module...` . Then, click `Android Library` and fill out the
    required module metadata. Click `Finish`.
 3. In the new module (let's call it `:fusedLibrary`) open the `build.gradle.kts` file,
    then replace the `plugins` block with
-```
+```kts
 plugins {
     alias(libs.plugins.android.fusedlibrary)
 }
@@ -65,12 +65,13 @@ plugins {
 to apply the Fused Library Plugin
 4. Fused library modules cannot not contain sources such as code or resources, nor does it use
    the typical `implementation` or `api` configurations you may expect to declare as dependencies.
+
 Done.
 
 Fused library introduces a new configuration `include`, that declares what dependencies will be
 fused in the built/published .aar file.
 
-For example, the :fusedLibrary could define the following in the `dependencies` block:
+For example, the `:fusedLibrary` could define the following in the `dependencies` block:
 
 ```kts
 dependencies {
@@ -91,25 +92,27 @@ dependencies {
 2. Once you are satisfied, you can proceed to build the library using
    `./gradlew :fusedLibrary:assemble`. Assuming dependencies are valid,
    this task produces the .aar fused library at `fusedLibrary/build/bundle/bundle.aar`.
-3. Resync project ctrl+shift+O
+3. Resync project `ctrl+shift+O`
+
 Done.
 
-At this point you can add the fused library as a dependency from other modules.
+At this point, you can add the fused library as a dependency from other modules.
 
 ### Running the consumption tests
 
 In the :app module there are tests that make use of the classes and resource distributed via 
-:fusedLibrary.
+`:fusedLibrary`.
 
 Run unit tests: `./gradlew :app:testDebugUnitTest --tests "com.example.fusedlibrarysample.FusedLibraryConsumptionUnitTest"`
+
 Run instrumentation tests: `./gradlew :app:connectedDebugAndroidTest`
 
 ### Publishing the fused library
 
 Fused Library Plugin artifacts can be easily configured for publication with Maven publishing
 plugins. The plugin generates it's own POM for distribution that preserves the artifact dependencies.
-We'll provide some typical configurations for publishing that may be useful for most use cases,
-however if your needs are more complex, consult the Maven documentation.
+We'll provide some typical configurations for publishing that may be useful for most use cases
+however, if your needs are more complex, consult the Maven documentation.
 
 Generating the fused lib POM
 1. Follow the steps of `Building a fused library`
@@ -143,12 +146,13 @@ Generating a maven repository with the fused library
  }
 
 ```
-2. Execute the task for creating the repository `./gradlew fusedLibrary:publishReleasePublicationToMyrepoRepository`
+2. Execute the task for creating the repository `./gradlew :fusedLibrary:publishReleasePublicationToMyrepoRepository`
 3. As androidLib3 is a project dependency of the fused library, that also needs to be published to 
-the repository`./gradlew androidLib3:publishMavenPublicationToMyrepoRepository`
-4. Note: :app has already configured dependency substitution that prefers the published local repo 
-artifacts over the :fusedLibrary project itself, so :app now automatically depends on the correct 
+the repository`./gradlew :androidLib3:publishMavenPublicationToMyrepoRepository`
+4. Note: `:app` has already configured dependency substitution that prefers the published local repo 
+artifacts over the `:fusedLibrary` project itself, so `:app` now automatically depends on the correct 
 artifacts.
+
 Done.
 
 ### Configurations
@@ -162,16 +166,16 @@ Done.
 This plugin remains in early stages, and there may be corner cases that have not been fully tested
 or developed.
 
-See open public issues at this link [open issues](https://issuetracker.google.com/issues?q=hotlistid:4053459)
+See open public issues at this link [open issues](https://issuetracker.google.com/components/1692458)
 
-Follow the below steps and use this [link to **file new bugs**](https://issuetracker.google.com/createIssue?title=%5Bfused+lib+-+public%5D+%3CIssue+Name+Here%3E&cc=lukeedgar%40google.com%2C+android-gradle%40google.com&description=Please+include+all+of+the+following%3A%0A1.+Steps+to+reproduce%0A2.+A+paste+of+the+exception%0A3.+run+%60.%2Fgradlew+%3A%3Cfused+library+module%5C%3E%3Areport%60+and+paste+the+contents+of+%0A%60%3Cmy+library+module%5C%3Ebuild%2Freports%2Ffused_library_report%2Fsingle%2Freport.json%60%0A4.Also+consider+running+%60gradle+%3A%3Cfused+library+module%3E%3Adependencies%60+if+dependency+information+is+relevant%0A5.%5Boptional%5D+if+the+build+was+successful%2C+provide+a+copy+of+the+.aar&format=MARKDOWN&component=192709&type=BUG&priority=P2&severity=S2&hotlistIds=4053459&assignee=lukeedgar%40google.com)
+Follow the below steps and use this [link to **file new bugs**](https://issuetracker.google.com/issues/new?title=%5Bfused+lib+-+public%5D+%3CIssue+Name+Here%3E&cc=lukeedgar%40google.com%2C+android-gradle%40google.com&description=1.+Steps+to+reproduce%0A2.+A+paste+of+the+exception%0A3.+run+%60.%2Fgradlew+%3A%3Cfused+library+module%3E%3Areport%60+and+paste+the+contents+of+%0A%60%3Cmy+library+module%3Ebuild%2Freports%2Ffused_library_report%2Fsingle%2Freport.json%60%0A4.+Also+consider+running+%60.%2Fgradlew+%3A%3Cfused+library+module%3E%3Adependencies%60+if+dependency+information+is+relevant%0A5.+%5C%5Boptional%5C%5D+if+the+build+was+successful%2C+provide+a+copy+of+the+.aar&format=MARKDOWN&component=192708&type=BUG&priority=P2&severity=S2&hotlistIds=4053459&assignee=lukeedgar%40google.com)
 **or provide suggestions** for the Fused Library Plugin.
 
 When filing an issue, please include the following information:
 1. Steps to reproduce
 2. A paste of the exception
-3. run `\gradle :\<fused library module\>:report\` and paste the contents of 
-`\<my library module\>build/reports/fused_library_report/single/report.json`
-4.Also consider running \`gradle :\<fused library module\>:dependencies\` if dependency information is relevant
-5.\[optional\] if the build was successful, provide a copy of the .aar
+3. run `./gradlew :<fused library module>:report` and paste the contents of 
+`<my library module>build/reports/fused_library_report/single/report.json`
+4. Also consider running `./gradlew :<fused library module>:dependencies` if dependency information is relevant
+5. \[optional\] if the build was successful, provide a copy of the .aar
 Done.

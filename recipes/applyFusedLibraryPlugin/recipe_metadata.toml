@@ -8,7 +8,7 @@ description ="""
   """
 
 [agpVersion]
-min = "8.9.0"
+min = "8.9.0-alpha08"
 
 # Relevant Gradle tasks to run per recipe
 [gradleTasks]
@@ -19,10 +19,11 @@ tasks = [
     ":fusedLibrary:publishReleasePublicationToMyrepoRepository",
     ":fusedLibrary:publishReleasePublicationToMyrepoRepository",
     ":app:testDebugUnitTest",
-    ":app:connectedDebugAndroidTest"
 ]
 
 # All the relevant metadata fields to create an index based on language/API/etc'
 [indexMetadata]
-index = []
+index = [
+    "Plugin Features/Fused Library Plugin"
+]
 

@@ -30,9 +30,9 @@ import org.junit.Assert.*
  */
 @RunWith(AndroidJUnit4::class)
 class FusedLibraryInstrumentationTest {
-    
+
     @Test
-    fun `access resources from fused library`() {
+    fun accessResourcesFromFusedLibrary() {
         val appContext = InstrumentationRegistry.getInstrumentation().targetContext
         val stringOverridden =
             appContext.getString(com.example.fusedlibrary.R.string.string_overridden)
@@ -43,7 +43,7 @@ class FusedLibraryInstrumentationTest {
     }
 
     @Test
-    fun `access external libraries from include dependencies`() {
+    fun accessExternalLibrariesFromIncludeDependencies() {
         val appContext = InstrumentationRegistry.getInstrumentation().targetContext
         val androidLib1AssetInputStream = appContext.assets.open("androidLib1-asset.json")
         val jsonString = androidLib1AssetInputStream.bufferedReader().use {it.readText() }

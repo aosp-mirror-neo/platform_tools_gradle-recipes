@@ -22,10 +22,10 @@ plugins {
 
 android {
     namespace = "com.example.androidlib2"
-    compileSdk = 34
+    compileSdk = $COMPILE_SDK
 
     defaultConfig {
-        minSdk = 34
+        minSdk = $MINIMUM_SDK
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -41,11 +41,4 @@ android {
 
 dependencies {
     implementation(project(":androidLib3"))
-    implementation("com.google.errorprone:error_prone_annotations:2.27.0")
-    implementation(libs.androidx.core.ktx)
-    implementation(libs.androidx.appcompat)
-    implementation(libs.material)
-    testImplementation(libs.junit)
-    androidTestImplementation(libs.androidx.junit)
-    androidTestImplementation(libs.androidx.espresso.core)
 }
