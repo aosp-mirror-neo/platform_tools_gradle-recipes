@@ -56,14 +56,14 @@ class CustomPlugin : Plugin<Project> {
             // Registers a callback to be called, when a new variant is configured
             androidComponents.onVariants { variant: Variant ->
 
-                variant.buildConfigFields.put("FloatValue",
+                variant.buildConfigFields?.put("FloatValue",
                     BuildConfigField(
                         type = "Float",
                         value = "${calculateFloatValue()}f",
                         comment = "Float Value")
                 )
 
-                variant.buildConfigFields.put("GitVersion", gitVersionProvider.map {  task ->
+                variant.buildConfigFields?.put("GitVersion", gitVersionProvider.map {  task ->
                     BuildConfigField(
                         type = "String",
                         value = "\"${task.gitVersionOutputFile.get().asFile.readText(Charsets.UTF_8)}\"",
