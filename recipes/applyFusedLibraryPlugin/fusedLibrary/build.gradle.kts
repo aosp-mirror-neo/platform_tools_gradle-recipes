@@ -21,12 +21,12 @@ plugins {
 
 androidFusedLibrary {
     namespace = "com.example.fusedlibrary"
-    minSdk = 34
+    minSdk = $MINIMUM_SDK
 
     // If aarMetadata is not explicitly specified,
     // aar metadata will be generated based on dependencies.
     aarMetadata {
-        minCompileSdk = 19
+        minCompileSdk = $MINIMUM_SDK
         minCompileSdkExtension = 1
     }
 }
@@ -51,6 +51,6 @@ publishing {
 dependencies {
     include(project(":androidLib1"))
     include(project(":androidLib2"))
-    include("com.google.code.gson:gson:2.11.0")
+    include("com.google.code.gson:gson:2.10.1")
     include(files("libs/simple-jar-with-A_DoIExist-class.jar"))
 }

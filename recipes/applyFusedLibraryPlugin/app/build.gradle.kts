@@ -21,12 +21,12 @@ plugins {
 
 android {
     namespace = "com.example.fusedlibrarysample"
-    compileSdk = 35
+    compileSdk = $COMPILE_SDK
 
     defaultConfig {
         applicationId = "com.example.fusedlibrarysample"
-        minSdk = 34
-        targetSdk = 34
+        minSdk = $MINIMUM_SDK
+        targetSdk = $COMPILE_SDK
         versionCode = 1
         versionName = "1.0"
 
@@ -53,11 +53,6 @@ android {
 
 dependencies {
     implementation(project(":fusedLibrary"))
-    implementation(libs.androidx.core.ktx)
-    implementation(libs.androidx.appcompat)
-    implementation(libs.material)
-    implementation(libs.androidx.activity)
-    implementation(libs.androidx.constraintlayout)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)

@@ -16,9 +16,6 @@
 
 package com.example.androidlib2
 
-import android.content.Context
-import android.provider.Settings.Global.getString
-
 class ClassFromAndroidLib2 {
 
     fun foo(): String {

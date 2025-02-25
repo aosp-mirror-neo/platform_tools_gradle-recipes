@@ -22,10 +22,10 @@ plugins {
 
 android {
     namespace = "com.example.androidlib3"
-    compileSdk = 34
+    compileSdk = $COMPILE_SDK
 
     defaultConfig {
-        minSdk = 24
+        minSdk = $MINIMUM_SDK
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         consumerProguardFiles("consumer-rules.pro")
@@ -66,10 +66,4 @@ publishing {
 }
 
 dependencies {
-    implementation(libs.androidx.core.ktx)
-    implementation(libs.androidx.appcompat)
-    implementation(libs.material)
-    testImplementation(libs.junit)
-    androidTestImplementation(libs.androidx.junit)
-    androidTestImplementation(libs.androidx.espresso.core)
 }
