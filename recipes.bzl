@@ -126,17 +126,33 @@ def recipe_test(
         },
         "8.8.0": {
             "name": name + "_8_8_0",
-            "gradle_path": "$(location //tools/base/build-system:gradle-distrib)",
+            "gradle_path": "$(location //tools/base/build-system:gradle-distrib-8.10.2)",
             "manifest_repos": [
                 "//tools/base/build-system/previous-versions:8.8.0",
                 "//tools/base/build-system/integration-test:kotlin_gradle_plugin_prebuilts",
                 ":kotlin_1_9_22",
-                "//tools/base/build-system:gradle-runtime-maven",
+                "//tools/base/build-system:gradle-8.10.2-runtime-maven",
             ],
             "zip_repos": [],
             "data": [
                 "//prebuilts/studio/sdk:build-tools/35.0.0",
-                "//tools/base/build-system:gradle-distrib",
+                "//tools/base/build-system:gradle-distrib-8.10.2",
+            ],
+            "jdk_version": 17,
+        },
+        "8.9.0": {
+            "name": name + "_8_9_0",
+            "gradle_path": "$(location //tools/base/build-system:gradle-distrib-8.11.1)",
+            "manifest_repos": [
+                "//tools/base/build-system/previous-versions:8.9.0",
+                "//tools/base/build-system/integration-test:kotlin_gradle_plugin_prebuilts",
+                ":kotlin_1_9_22",
+                "//tools/base/build-system:gradle-8.11.1-runtime-maven",
+            ],
+            "zip_repos": [],
+            "data": [
+                "//prebuilts/studio/sdk:build-tools/35.0.0",
+                "//tools/base/build-system:gradle-distrib-8.11.1",
             ],
             "jdk_version": 17,
         },
