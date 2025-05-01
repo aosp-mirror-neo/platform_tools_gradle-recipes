@@ -34,7 +34,3 @@ java {
         languageVersion.set(JavaLanguageVersion.of(17))
     }
 }
-
-androidComponents {
-    registerSourceType("toml")
-}

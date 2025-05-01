@@ -40,6 +40,10 @@ class CustomPlugin : Plugin<Project> {
             // This is the second of two entry points into the Android Gradle plugin
             val androidComponents =
                 project.extensions.getByType(ApplicationAndroidComponentsExtension::class.java)
+
+            // Registers the custom source type
+            androidComponents.registerSourceType("toml")
+
             // Registers a callback to be called, when a new variant is configured
             androidComponents.onVariants { variant ->
 
