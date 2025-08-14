@@ -30,7 +30,6 @@ import org.gradle.api.tasks.InputFiles
 import org.gradle.api.tasks.Optional
 import org.gradle.api.tasks.OutputDirectory
 import org.gradle.api.tasks.TaskAction
-import org.gradle.configurationcache.extensions.capitalized
 import org.gradle.kotlin.dsl.register
 import java.lang.IllegalStateException
 import java.lang.RuntimeException
@@ -60,7 +59,7 @@ class CustomPlugin : Plugin<Project> {
                     ?.let {
                         // create the task that will add new source files to the asset source folder.
                         val assetCreationTask =
-                            project.tasks.register<AssetCreatorTask>("create${variant.name.capitalized()}Asset")
+                            project.tasks.register<AssetCreatorTask>("create${variant.name.replaceFirstChar { if (it.isLowerCase()) it.titlecase() else it.toString() }}Asset")
 
                         // registers the newly created Task as the provider for a new generated
                         // source folder for the 'assets' type.
@@ -74,7 +73,7 @@ class CustomPlugin : Plugin<Project> {
 
                 // -- Verification --
                 // the following is just to validate the recipe and is not actually part of the recipe itself
-                val taskName = "verify${variant.name.capitalized()}Asset"
+                val taskName = "verify${variant.name.replaceFirstChar { if (it.isLowerCase()) it.titlecase() else it.toString() }}Asset"
                 project.tasks.register<VerifyAssetTask>(taskName) {
                     // the verifying task will look at the merged assets folder and ensure
                     // the file added by the assetCreationTask is present.

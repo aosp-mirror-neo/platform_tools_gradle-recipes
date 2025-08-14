@@ -25,7 +25,6 @@ import com.android.build.gradle.BasePlugin
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.kotlin.dsl.register
-import org.gradle.configurationcache.extensions.capitalized
 
 /**
  * This custom plugin will register a callback that is applied to all variants for all Android plugins.
@@ -60,7 +59,7 @@ class CustomPlugin : Plugin<Project> {
             // -- Verification --
             // the following is just to validate the recipe and is not actually part of the recipe itself
             androidComponents.onVariants { variant ->
-                val taskName = "check${variant.name.capitalized()}TestStatus"
+                val taskName = "check${variant.name.replaceFirstChar { if (it.isLowerCase()) it.titlecase() else it.toString() }}TestStatus"
                 project.tasks.register<CheckTestStatusTask>(taskName) {
                     // If the unit tests are disabled, the unit test type will not be present in the host tests
                     unitTestEnabled.set(

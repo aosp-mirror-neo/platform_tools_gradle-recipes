@@ -23,7 +23,6 @@ import org.gradle.api.Project
 import org.gradle.api.file.DirectoryProperty
 import org.gradle.api.tasks.OutputDirectory
 import org.gradle.api.tasks.TaskAction
-import org.gradle.configurationcache.extensions.capitalized
 import org.gradle.kotlin.dsl.register
 
 /**
@@ -56,7 +55,7 @@ class CustomPlugin : Plugin<Project> {
                 )
 
                 val taskProvider = project.tasks.register<TransformNativeDebugMetadataTask>(
-                    "transform${variant.name.capitalized()}NativeDebugMetadata"
+                    "transform${variant.name.replaceFirstChar { if (it.isLowerCase()) it.titlecase() else it.toString() }}NativeDebugMetadata"
                 )
 
                 // TransformNativeDebugMetadataTask will combine the files of the input directories into the output
@@ -69,7 +68,7 @@ class CustomPlugin : Plugin<Project> {
 
                 // -- Verification --
                 // the following is just to validate the recipe and is not actually part of the recipe itself
-                val taskName = "check${variant.name.capitalized()}NativeDebugMetadata"
+                val taskName = "check${variant.name.replaceFirstChar { if (it.isLowerCase()) it.titlecase() else it.toString() }}NativeDebugMetadata"
                 project.tasks.register<CheckNativeDebugMetadataTask>(taskName) {
                     nativeDebugMetadataDirs.set(
                         variant.artifacts.getAll(MultipleArtifact.NATIVE_DEBUG_METADATA)

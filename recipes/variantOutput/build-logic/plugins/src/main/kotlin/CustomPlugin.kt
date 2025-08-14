@@ -21,7 +21,6 @@ import com.android.build.api.variant.VariantOutputConfiguration
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.kotlin.dsl.register
-import org.gradle.configurationcache.extensions.capitalized
 
 /**
  * This custom plugin will register a callback that is applied to all variants.
@@ -60,7 +59,7 @@ class CustomPlugin : Plugin<Project> {
             // -- Verification --
             // the following is just to validate the recipe and is not actually part of the recipe itself
             androidComponents.onVariants(androidComponents.selector().all()) { variant ->
-                val taskName = "check${variant.name.capitalized()}MergedManifest"
+                val taskName = "check${variant.name.replaceFirstChar { if (it.isLowerCase()) it.titlecase() else it.toString() }}MergedManifest"
                 project.tasks.register<CheckMergedManifestTask>(taskName) {
                     mergedManifest.set(
                         variant.artifacts.get(SingleArtifact.MERGED_MANIFEST)

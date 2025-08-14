@@ -114,6 +114,10 @@ recipe_test(
 )
 
 recipe_test(
+    name = "selectVariants_pre_8_5",
+)
+
+recipe_test(
     name = "createSingleArtifact",
 )
 

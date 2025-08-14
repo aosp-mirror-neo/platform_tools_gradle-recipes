@@ -22,7 +22,6 @@ import org.gradle.api.file.DirectoryProperty
 import org.gradle.api.Project
 import org.gradle.api.tasks.InputDirectory
 import org.gradle.api.tasks.TaskAction
-import org.gradle.configurationcache.extensions.capitalized
 import org.gradle.kotlin.dsl.register
 
 /**
@@ -50,7 +49,7 @@ class CustomPlugin : Plugin<Project> {
 
                 // -- Verification --
                 // the following is just to validate the recipe and is not actually part of the recipe itself
-                project.tasks.register<ValidateTask>("validate${variant.name.capitalized()}") {
+                project.tasks.register<ValidateTask>("validate${variant.name.replaceFirstChar { if (it.isLowerCase()) it.titlecase() else it.toString() }}") {
                     // The input of the validation task should be the output of the pre-build task.
                     // The normal way to do this would be:
                     //     input.set(preBuildTaskProvider.flatMap { it.output }

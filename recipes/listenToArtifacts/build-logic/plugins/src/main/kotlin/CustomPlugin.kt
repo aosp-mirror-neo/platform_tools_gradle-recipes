@@ -25,7 +25,6 @@ import org.gradle.api.provider.Property
 import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.InputDirectory
 import org.gradle.api.tasks.TaskAction
-import org.gradle.configurationcache.extensions.capitalized
 import org.gradle.kotlin.dsl.register
 
 /**
@@ -67,7 +66,7 @@ class CustomPlugin : Plugin<Project> {
                 // -- Verification --
                 // the following is just to validate the recipe and is not actually
                 // part of the recipe itself
-                project.tasks.register<TemplateTask>("validate${variant.name.capitalized()}") {
+                project.tasks.register<TemplateTask>("validate${variant.name.replaceFirstChar { if (it.isLowerCase()) it.titlecase() else it.toString() }}") {
                     // The input of the validation task should be the output of the copy task.
                     // The normal way to do this would be:
                     //     input.set(copyTask.flatMap { it.output }

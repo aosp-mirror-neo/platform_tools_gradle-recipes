@@ -22,7 +22,6 @@ import org.gradle.api.Project
 import org.gradle.api.file.DirectoryProperty
 import org.gradle.api.tasks.OutputDirectory
 import org.gradle.kotlin.dsl.register
-import org.gradle.configurationcache.extensions.capitalized
 
 /**
  * This custom plugin will register a callback that is applied to all variants.
@@ -42,7 +41,7 @@ class CustomPlugin : Plugin<Project> {
             // Registers a callback to be called, when a new variant is configured
             androidComponents.onVariants { variant ->
                 val taskProvider =
-                    project.tasks.register<TransformAssetsTask>("transform${variant.name.capitalized()}Assets")
+                    project.tasks.register<TransformAssetsTask>("transform${variant.name.replaceFirstChar { if (it.isLowerCase()) it.titlecase() else it.toString() }}Assets")
 
                 // TransformAssetsTask will change the assets directory
                 variant.artifacts.use(taskProvider)
@@ -53,7 +52,7 @@ class CustomPlugin : Plugin<Project> {
 
                 // -- Verification --
                 // the following is just to validate the recipe and is not actually part of the recipe itself
-                val taskName = "check${variant.name.capitalized()}Assets"
+                val taskName = "check${variant.name.replaceFirstChar { if (it.isLowerCase()) it.titlecase() else it.toString() }}Assets"
                 project.tasks.register<CheckAssetsTask>(taskName) {
                     assetsDirectory.set(
                         variant.artifacts.get(SingleArtifact.ASSETS)

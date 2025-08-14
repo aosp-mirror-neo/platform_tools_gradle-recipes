@@ -22,7 +22,6 @@ import com.android.build.api.artifact.ScopedArtifact
 import com.android.build.api.variant.ScopedArtifacts
 import org.gradle.api.Plugin
 import org.gradle.api.Project
-import org.gradle.configurationcache.extensions.capitalized
 import org.gradle.kotlin.dsl.register
 import java.nio.file.Files
 
@@ -54,7 +53,7 @@ class CustomPlugin : Plugin<Project> {
 
                 // -- Verification --
                 // the following is just to validate the recipe and is not actually part of the recipe itself
-                val taskName = "check${variant.name.capitalized()}AsmTransformation"
+                val taskName = "check${variant.name.replaceFirstChar { if (it.isLowerCase()) it.titlecase() else it.toString() }}AsmTransformation"
                 val taskProvider = project.tasks.register<CheckAsmTransformationTask>(taskName) {
                     output.set(
                         project.layout.buildDirectory.dir("intermediates/$taskName")

@@ -28,7 +28,6 @@ import org.gradle.api.file.RegularFileProperty
 import org.gradle.api.tasks.OutputDirectory
 import org.gradle.api.tasks.OutputFile
 import org.gradle.api.tasks.TaskAction
-import org.gradle.configurationcache.extensions.capitalized
 
 /**
  * This custom plugin creates tasks that append to ScopedArtifact and verifies it.
@@ -49,9 +48,9 @@ class CustomPlugin : Plugin<Project> {
             androidComponents.onVariants { variant ->
 
                 val addDirectoryClassTaskProvider =
-                    project.tasks.register("add${variant.name.capitalized()}DirectoryClass", AddDirectoryClassTask::class.java)
+                    project.tasks.register("add${variant.name.replaceFirstChar { if (it.isLowerCase()) it.titlecase() else it.toString() }}DirectoryClass", AddDirectoryClassTask::class.java)
                 val addJarClassTaskProvider =
-                    project.tasks.register("add${variant.name.capitalized()}JarClass", AddJarClassTask::class.java)
+                    project.tasks.register("add${variant.name.replaceFirstChar { if (it.isLowerCase()) it.titlecase() else it.toString() }}JarClass", AddJarClassTask::class.java)
                 // Append the directory to the PROJECT scope classes
                 variant.artifacts
                     .forScope(ScopedArtifacts.Scope.PROJECT)
@@ -71,7 +70,7 @@ class CustomPlugin : Plugin<Project> {
 
                 // -- Verification --
                 // the following is just to validate the recipe and is not actually part of the recipe itself
-                val taskName = "check${variant.name.capitalized()}Classes"
+                val taskName = "check${variant.name.replaceFirstChar { if (it.isLowerCase()) it.titlecase() else it.toString() }}Classes"
                 val checkClassesTaskProvider = project.tasks.register<CheckClassesTask>(taskName) {
                     output.set(
                         project.layout.buildDirectory.dir("intermediates/$taskName")

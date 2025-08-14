@@ -16,8 +16,6 @@
 
 import com.android.build.api.variant.ApplicationAndroidComponentsExtension
 import com.android.build.api.variant.HasUnitTest
-import com.android.build.api.variant.HasHostTestsBuilder
-import com.android.build.api.variant.HostTestBuilder
 import com.android.build.gradle.AppPlugin
 import org.gradle.api.DefaultTask
 import org.gradle.api.Plugin
@@ -79,7 +77,7 @@ class CustomPlugin : Plugin<Project> {
             androidComponents.beforeVariants(
                     androidComponents.selector().withName("fullMinApi24Release")
             ) { variantBuilder ->
-                (variantBuilder as HasHostTestsBuilder).hostTests.get(HostTestBuilder.UNIT_TEST_TYPE)?.enable = false
+                variantBuilder.enableUnitTest = false
             }
 
             // Registers a callback to be called, when variants will be configured
@@ -88,7 +86,7 @@ class CustomPlugin : Plugin<Project> {
                 project.tasks.register<CheckConfigurationTask>("check${variant.name}Configuration") {
                     minSdkVersion.set(variant.minSdk.apiLevel)
                     shrinkResources.set(variant.shrinkResources)
-                    enableUnitTests.set((variant as? HasUnitTest)?.unitTest != null)
+                    enableUnitTests.set(variant.unitTest != null)
                     variantName.set(variant.name)
                     output.set(project.layout.buildDirectory.dir("check${variant.name}Configuration"))
                 }
