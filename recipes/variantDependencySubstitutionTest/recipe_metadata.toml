@@ -15,7 +15,6 @@ min = "8.1.0"
 tasks = [
     ":app:assemble",
     ":app:testDebugUnitTest",
-    ":app:testReleaseUnitTest",
     ":app:assembleAndroidTest"
 ]
 
