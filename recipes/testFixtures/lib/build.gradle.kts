@@ -24,7 +24,12 @@ android {
     compileSdk = $COMPILE_SDK
     defaultConfig {
        minSdk = $MINIMUM_SDK
-       targetSdk = $COMPILE_SDK
+    }
+    lint {
+        targetSdk = $COMPILE_SDK
+    }
+    testOptions {
+        targetSdk = $COMPILE_SDK
     }
     testFixtures {
         enable = true

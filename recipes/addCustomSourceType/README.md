@@ -28,37 +28,8 @@ You can check sources assignments/manipulation at [`CustomPlugin`](build-logic/p
 
 ## To Run
 
-To run the recipe : `./gradlew :app:sourceSets :app:debugDisplayAllSources`
-and the output will show all possible source sets with source types folders:
-```
-...
-release
--------
-Compile configuration: releaseCompile
-build.gradle name: android.sourceSets.release
-Java sources: [app/src/release/java]
-Kotlin sources: [app/src/release/kotlin, app/src/release/java]
-Manifest file: app/src/release/AndroidManifest.xml
-Android resources: [app/src/release/res]
-Assets: [app/src/release/assets]
-AIDL sources: [app/src/release/aidl]
-RenderScript sources: [app/src/release/rs]
-Baseline profile sources: [app/src/release/baselineProfiles]
-JNI sources: [app/src/release/jni]
-JNI libraries: [app/src/release/jniLibs]
-Custom sources: [app/src/release/toml]
-Java-style resources: [app/src/release/resources]
-
-test
-----
-Compile configuration: testCompile
-build.gradle name: android.sourceSets.test
-Java sources: [app/src/test/java]
-Kotlin sources: [app/src/test/kotlin, app/src/test/java]
-Java-style resources: [app/src/test/resources]
-...
-```
-also it will show `debugDisplayAllSources` output with specific `toml` source type folders
+To run the recipe : `./gradlew :app:debugDisplayAllSources`, it will show `debugDisplayAllSources` output with
+specific `toml` source type folders
 ```
 > Task :app:debugDisplayAllSources
 --> Got a directory src/main/toml
