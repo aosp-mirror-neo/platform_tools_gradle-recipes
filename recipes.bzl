@@ -156,6 +156,54 @@ def recipe_test(
             ],
             "jdk_version": 17,
         },
+        "8.10.1": {
+            "name": name + "_8_10_1",
+            "gradle_path": "$(location //tools/base/build-system:gradle-distrib-8.11.1)",
+            "manifest_repos": [
+                "//tools/base/build-system/previous-versions:8.10.1",
+                "//tools/base/build-system/integration-test:kotlin_gradle_plugin_prebuilts",
+                ":kotlin_2_1_20",
+                "//tools/base/build-system:gradle-8.11.1-runtime-maven",
+            ],
+            "zip_repos": [],
+            "data": [
+                "//prebuilts/studio/sdk:build-tools/35.0.0",
+                "//tools/base/build-system:gradle-distrib-8.11.1",
+            ],
+            "jdk_version": 17,
+        },
+        "8.11.0": {
+            "name": name + "_8_11_0",
+            "gradle_path": "$(location //tools/base/build-system:gradle-distrib-8.13)",
+            "manifest_repos": [
+                "//tools/base/build-system/previous-versions:8.11.0",
+                "//tools/base/build-system/integration-test:kotlin_gradle_plugin_prebuilts",
+                ":kotlin_2_1_20",
+                "//tools/base/build-system:gradle-8.13-runtime-maven",
+            ],
+            "zip_repos": [],
+            "data": [
+                "//prebuilts/studio/sdk:build-tools/35.0.0",
+                "//tools/base/build-system:gradle-distrib-8.13",
+            ],
+            "jdk_version": 17,
+        },
+        "8.12.0": {
+            "name": name + "_8_12_0",
+            "gradle_path": "$(location //tools/base/build-system:gradle-distrib-8.13)",
+            "manifest_repos": [
+                "//tools/base/build-system/previous-versions:8.12.0",
+                "//tools/base/build-system/integration-test:kotlin_gradle_plugin_prebuilts",
+                ":kotlin_2_1_20",
+                "//tools/base/build-system:gradle-8.13-runtime-maven",
+            ],
+            "zip_repos": [],
+            "data": [
+                "//prebuilts/studio/sdk:build-tools/35.0.0",
+                "//tools/base/build-system:gradle-distrib-8.13",
+            ],
+            "jdk_version": 17,
+        },
         "ToT": {
             "name": name,
             "gradle_path": "$(location //tools/base/build-system:gradle-distrib)",
