@@ -131,7 +131,7 @@ class GradleRecipeTest {
                 "--mode",
                 "workingcopy",
                 "--source",
-                File(workingCopyDir, name).absolutePath,
+                File(workingCopyDir, source.fileName.toString()).absolutePath,
                 "--gradleRecipesFolder",
                 Paths.get("tools/gradle-recipes").toFile().absolutePath,
                 "--agpVersion",

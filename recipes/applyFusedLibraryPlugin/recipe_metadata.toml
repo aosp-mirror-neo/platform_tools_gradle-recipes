@@ -8,7 +8,7 @@ description ="""
   """
 
 [agpVersion]
-min = "8.9.0"
+min = "9.0.0"
 
 # Relevant Gradle tasks to run per recipe
 [gradleTasks]

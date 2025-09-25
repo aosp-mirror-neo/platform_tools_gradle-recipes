@@ -1,7 +1,7 @@
 load("//tools/base/bazel:kotlin.bzl", "kotlin_library", "kotlin_test")
 load("//tools/base/bazel:maven.bzl", "maven_repository")
 load("//tools/base/build-system/integration-test:common-dependencies.bzl", "KGP_1_8_10", "KGP_1_9_22", "KGP_2_1_20")
-load(":recipes.bzl", "recipe_test")
+load(":recipes.bzl", "recipe_test_suite")
 
 kotlin_library(
     name = "convert_tool",
@@ -34,7 +34,7 @@ kotlin_test(
 )
 
 kotlin_library(
-    name = "gradle_recipe_test",
+    name = "gradle_recipe_tester",
     testonly = 1,
     srcs = glob(["convert-tool/integTest/src/main/kotlin/**/*.kt"]),
     visibility = ["//visibility:public"],
@@ -67,126 +67,7 @@ maven_repository(
     visibility = [":__subpackages__"],
 )
 
-recipe_test(
-    name = "addBuildTypeUsingDslFinalize",
-)
-
-recipe_test(
-    name = "addGeneratedSourceFolder",
-)
-
-recipe_test(
-    name = "addCustomBuildConfigFields",
-)
-
-recipe_test(
-    name = "addMultipleArtifact",
-)
-
-recipe_test(
-    name = "allProjectsApkAction",
-)
-
-recipe_test(
-    name = "appendToMultipleArtifact",
-)
-
-recipe_test(
-    name = "extendingAgp",
-)
-
-recipe_test(
-    name = "getMultipleArtifact",
-)
-
-recipe_test(
-    name = "getScopedArtifacts",
-)
-
-recipe_test(
-    name = "getSingleArtifact",
-)
-
-recipe_test(
-    name = "perVariantManifestPlaceholder",
-)
-
-recipe_test(
-    name = "variantDependencySubstitutionTest",
-)
-
-recipe_test(
-    name = "selectVariants",
-)
-
-recipe_test(
-    name = "selectVariants_pre_8_5",
-)
-
-recipe_test(
-    name = "createSingleArtifact",
-)
-
-recipe_test(
-    name = "addCustomSourceType",
-)
-
-recipe_test(
-    name = "transformManifest",
-)
-
-recipe_test(
-    name = "workerEnabledTransformation",
-)
-
-recipe_test(
-    name = "transformAllClasses",
-)
-
-recipe_test(
-    name = "onVariants",
-)
-
-recipe_test(
-    name = "legacyTaskBridging",
-)
-
-recipe_test(
-    name = "testFixtures",
-)
-
-recipe_test(
-    name = "asmTransformClasses",
-)
-
-recipe_test(
-    name = "transformDirectory",
-)
-
-recipe_test(
-    name = "transformMultiple",
-)
-
-recipe_test(
-    name = "variantOutput",
-)
-
-recipe_test(
-    name = "registerPreBuild",
-)
-
-recipe_test(
-    name = "listenToMultipleArtifact",
-)
-
-recipe_test(
-    name = "appendToScopedArtifacts",
-)
-
-recipe_test(
-    name = "disableTests",
-)
-
-recipe_test(
-    name = "applyFusedLibraryPlugin",
+recipe_test_suite(
+    name = "recipe_tests",
+    recipes = glob(["recipes/**/recipe_metadata.toml"]),
 )

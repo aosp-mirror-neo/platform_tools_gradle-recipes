@@ -94,21 +94,21 @@ class RecipeConverter(
 
         val recipeData = RecipeData.loadFrom(source, mode, context)
 
-        val recipeDestination = destination.resolve(recipeData.destinationFolder)
-
-        if (recipeDestination.isRegularFile()) {
-            printErrorAndTerminate("Destination $recipeDestination exist but is not a folder!")
-        }
-
-        if (recipeDestination.isDirectory() && recipeDestination.isNotEmpty()) {
-            if (!overwrite) {
-                printErrorAndTerminate("Destination $recipeDestination folder is not empty, call converter with --overwrite to overwrite it")
-            } else {
-                recipeDestination.deleteNonHiddenRecursively()
-            }
-        }
-
         val resultMode = if (converter.isConversionCompliant(recipeData)) {
+            val recipeDestination = destination.resolve(recipeData.destinationFolder)
+
+            if (recipeDestination.isRegularFile()) {
+                printErrorAndTerminate("Destination $recipeDestination exist but is not a folder!")
+            }
+
+            if (recipeDestination.isDirectory() && recipeDestination.isNotEmpty()) {
+                if (!overwrite) {
+                    printErrorAndTerminate("Destination $recipeDestination folder is not empty, call converter with --overwrite to overwrite it (source: $source")
+                } else {
+                    recipeDestination.deleteNonHiddenRecursively()
+                }
+            }
+
             if (mode == Mode.WORKINGCOPY) {
                 converter.minAgp = recipeData.minAgpVersion
             }
