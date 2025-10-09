@@ -21,7 +21,9 @@ plugins {
 
 androidFusedLibrary {
     namespace = "com.example.fusedlibrary"
-    minSdk = $MINIMUM_SDK
+    minSdk {
+        version = release($MINIMUM_SDK)
+    }
 
     // If aarMetadata is not explicitly specified,
     // aar metadata will be generated based on dependencies.
