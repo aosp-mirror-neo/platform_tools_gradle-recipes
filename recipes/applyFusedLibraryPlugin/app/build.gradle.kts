@@ -20,12 +20,18 @@ plugins {
 
 android {
     namespace = "com.example.fusedlibrarysample"
-    compileSdk = $COMPILE_SDK
+    compileSdk {
+        version = release($COMPILE_SDK)
+    }
 
     defaultConfig {
         applicationId = "com.example.fusedlibrarysample"
-        minSdk = $MINIMUM_SDK
-        targetSdk = $COMPILE_SDK
+        minSdk {
+            version = release($MINIMUM_SDK)
+        }
+        targetSdk {
+            version = release($COMPILE_SDK)
+        }
         versionCode = 1
         versionName = "1.0"
 

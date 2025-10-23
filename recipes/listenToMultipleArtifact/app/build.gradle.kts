@@ -22,10 +22,16 @@ plugins {
 
 android {
     namespace = "com.example.android.recipes.listentomultipleartifact"
-    compileSdk = $COMPILE_SDK
+    compileSdk {
+        version = release($COMPILE_SDK)
+    }
     defaultConfig {
-       minSdk = $MINIMUM_SDK
-       targetSdk = $COMPILE_SDK
+        minSdk {
+            version = release($MINIMUM_SDK)
+        }
+        targetSdk {
+            version = release($COMPILE_SDK)
+        }
     }
 
     // This is necessary to enable the tasks that use NATIVE_DEBUG_METADATA

@@ -16,14 +16,19 @@
 
 plugins {
     alias(libs.plugins.android.application)
-    alias(libs.plugins.kotlin.android)
 }
 
 android {
     namespace = "com.example.android.recipes.all_projects_action_app2"
-    compileSdk = $COMPILE_SDK
+    compileSdk {
+        version = release($COMPILE_SDK)
+    }
     defaultConfig {
-       minSdk = $MINIMUM_SDK
-       targetSdk = $COMPILE_SDK
+        minSdk {
+            version = release($MINIMUM_SDK)
+        }
+        targetSdk {
+            version = release($COMPILE_SDK)
+        }
     }
 }

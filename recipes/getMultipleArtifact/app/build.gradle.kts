@@ -22,11 +22,17 @@ plugins {
 
 android {
     namespace = "com.example.android.recipes.getmultipleartifact"
-    compileSdk = $COMPILE_SDK
+    compileSdk {
+        version = release($COMPILE_SDK)
+    }
     defaultConfig {
-       minSdk = $MINIMUM_SDK
-       targetSdk = $COMPILE_SDK
-       multiDexEnabled = true
-       multiDexKeepProguard = file("main_dex_rules.txt")
+        minSdk {
+            version = release($MINIMUM_SDK)
+        }
+        targetSdk {
+            version = release($COMPILE_SDK)
+        }
+        multiDexEnabled = true
+        multiDexKeepProguard = file("main_dex_rules.txt")
     }
 }

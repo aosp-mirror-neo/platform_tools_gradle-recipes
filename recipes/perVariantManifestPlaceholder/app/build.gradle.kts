@@ -22,9 +22,15 @@ plugins {
 
 android {
     namespace = "com.example.android.recipes.per_variant_manifest_placeholder"
-    compileSdk = $COMPILE_SDK
+    compileSdk {
+        version = release($COMPILE_SDK)
+    }
     defaultConfig {
-       minSdk = $MINIMUM_SDK
-       targetSdk = $COMPILE_SDK
+        minSdk {
+            version = release($MINIMUM_SDK)
+        }
+        targetSdk {
+            version = release($COMPILE_SDK)
+        }
     }
 }

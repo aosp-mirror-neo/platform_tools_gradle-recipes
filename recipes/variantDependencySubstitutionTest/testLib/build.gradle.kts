@@ -21,9 +21,13 @@ plugins {
 
 android {
     namespace = "com.example.android.recipes.variantDependencySubstitutionTest.testLib"
-    compileSdk = $COMPILE_SDK
+    compileSdk {
+        version = release($COMPILE_SDK)
+    }
     defaultConfig {
-       minSdk = $MINIMUM_SDK
+        minSdk {
+            version = release($MINIMUM_SDK)
+        }
     }
 }
 
