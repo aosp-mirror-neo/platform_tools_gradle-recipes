@@ -20,24 +20,24 @@ import com.google.android.gradle_recipe.converter.context.Context
 import com.google.android.gradle_recipe.converter.converters.FullAgpVersion
 import com.google.android.gradle_recipe.converter.converters.RecipeConverter
 import com.google.android.gradle_recipe.converter.converters.RecipeConverter.Mode
+import com.google.android.gradle_recipe.converter.converters.ResultMode
 import java.nio.file.Path
 import kotlin.io.path.createTempDirectory
 import kotlin.io.path.name
 
 /**
- * This will convert the recipe back to sources (using a temp folder) and then validate it.
+ * This validator takes a working copy and validate that it still works.
  *
- * If [agpVersion] is not null, that version is used for validation. Otherwise, the recipe is
- * validated using both the min and the current/max AGP versions.
+ * It does this by converting it back to source mode in a temp folder, and then validates it with whatever AGP
+ * version range is declared (either min/max or min and current AGP version)
  */
 class WorkingCopyValidator(
     private val context: Context,
-    private val agpVersion: FullAgpVersion? = null,
 ) {
 
-    fun validate(recipeSource: Path) {
-        val recipeValidator = SourceValidator(context, agpVersion)
-        recipeValidator.validate(convertToSourceOfTruth(recipeSource), recipeSource.name)
+    fun validate(recipeSource: Path): ResultMode {
+        val recipeValidator = SourceValidator(context, agpVersion = null)
+        return recipeValidator.validate(convertToSourceOfTruth(recipeSource), recipeSource.name)
     }
 
     private fun convertToSourceOfTruth(from: Path): Path {
@@ -48,6 +48,7 @@ class WorkingCopyValidator(
             agpVersion = null,
             gradleVersion = null,
             mode = Mode.SOURCE,
+            strictVersionCheck = false,
         )
         val result = convertToSourceTruth.convert(source = from, destination = destination)
 

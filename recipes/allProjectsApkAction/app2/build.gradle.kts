@@ -15,7 +15,7 @@
  */
 
 plugins {
-    alias(libs.plugins.android.application)
+    id("com.android.application")
 }
 
 android {

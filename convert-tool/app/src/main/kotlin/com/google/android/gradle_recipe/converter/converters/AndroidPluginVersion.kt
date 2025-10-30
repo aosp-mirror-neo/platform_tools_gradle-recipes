@@ -16,7 +16,6 @@
 
 package com.google.android.gradle_recipe.converter.converters
 
-import com.google.android.gradle_recipe.converter.converters.AndroidPluginVersion.PreviewType
 import java.util.Locale
 import java.util.regex.Pattern
 

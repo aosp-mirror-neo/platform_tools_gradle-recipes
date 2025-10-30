@@ -31,20 +31,22 @@ import kotlin.io.path.name
  *
  * If [agpVersion] is not null, that version is used for validation. Otherwise, the recipe is
  * validated using both the min and the current/max AGP versions.
+ *
+ * This creates release copies of the recipe with the specific versions of AGP(s), and tests these copies.
  */
 class SourceValidator(
     private val context: Context,
-    private val agpVersion: FullAgpVersion? = null
+    private val agpVersion: FullAgpVersion? = null,
 ) {
 
-    fun validate(recipeFolder: Path, name: String? = null) {
+    fun validate(recipeFolder: Path, name: String? = null): ResultMode {
         val finalName = name ?: recipeFolder.name
         val recipeData = RecipeData.loadFrom(recipeFolder, Mode.RELEASE, context)
 
-        if (agpVersion != null) {
+        return if (agpVersion != null) {
             validateRecipeFromSource(finalName, recipeFolder, agpVersion)
         } else {
-            validateRecipeFromSource(finalName, recipeFolder, recipeData.minAgpVersion)
+            validateRecipeFromSource(finalName, recipeFolder, recipeData.minAgpVersion.toFull())
 
             val max = if (recipeData.maxAgpVersion == null) {
                 context.maxPublishedAgp
@@ -60,7 +62,7 @@ class SourceValidator(
         name: String,
         from: Path,
         agpVersion: FullAgpVersion,
-    ) {
+    ): ResultMode {
         val gradleVersion = if (context.gradlePath == null) {
             context.getGradleVersion(agpVersion.toShort())
         } else {
@@ -72,6 +74,9 @@ class SourceValidator(
             agpVersion = agpVersion,
             gradleVersion = gradleVersion,
             mode = Mode.RELEASE,
+            // normally strict, unless we're running on our CI, because we validate against all AGP versions on
+            // purpose and we want to just skip the incompatible ones.
+            strictVersionCheck = !context.ci
         )
 
         val destinationFolder = createTempDirectory().also { it.toFile().deleteOnExit() }
@@ -92,5 +97,7 @@ class SourceValidator(
                 tasksExecutor.executeTasks(conversionResult.recipeData.validationTasks)
             }
         }
+
+        return conversionResult.resultMode
     }
 }

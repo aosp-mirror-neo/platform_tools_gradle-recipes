@@ -19,16 +19,18 @@ package com.android.tools.gradle
 import com.android.tools.gradle.Gradle
 import com.android.utils.FileUtils
 import com.android.testutils.TestUtils
-import com.google.android.gradle_recipe.converter.main
+import com.google.android.gradle_recipe.converter.convertAndValidate
 import com.google.android.gradle_recipe.converter.context.DefaultContext
 import com.google.android.gradle_recipe.converter.context.Context
 import com.google.android.gradle_recipe.converter.converters.FullAgpVersion
+import com.google.android.gradle_recipe.converter.converters.ResultMode
 import com.google.android.gradle_recipe.converter.converters.ShortAgpVersion
 import com.google.common.truth.Truth.assertThat
 import java.io.File
 import java.nio.file.Path
 import java.nio.file.Paths
 import org.junit.Assert.fail
+import org.junit.Assume
 import org.junit.Test
 
 class GradleRecipeTest {
@@ -75,63 +77,13 @@ class GradleRecipeTest {
         val repos = System.getProperty("repos").split(",").map { File(it) }
         repos.forEach { Gradle.addRepo(it, repoDir) }
 
-        // Validate with --mode source to test that code path, but the validation itself is
-        // redundant because the recipe is validated with --mode workingcopy below.
-        // Because of this redundancy, we only validate the source copy for "ToT" AGP.
-        if (validateSource) {
-            main(
-                arrayOf(
-                    "validate",
-                    "--mode",
-                    "source",
-                    "--source",
-                    source.toFile().absolutePath,
-                    "--gradleRecipesFolder",
-                    Paths.get("tools/gradle-recipes").toFile().absolutePath,
-                    "--agpVersion",
-                    agpVersion,
-                    "--repoLocation",
-                    FileUtils.toSystemIndependentPath(repoDir.absolutePath),
-                    "--gradlePath",
-                    File(gradlePath).toURI().toString(),
-                    "--javaHome",
-                    getJDKPath(jdkVersion).toFile().absolutePath,
-                    "--androidHome",
-                    File(TestUtils.getRelativeSdk()).absolutePath,
-                    "--ci"
-                )
-            )
-        }
-
-        // Convert to working copy
-        main(
-            arrayOf(
-                "convert",
-                "--mode",
-                "workingcopy",
-                "--source",
-                source.toFile().absolutePath,
-                "--destination",
-                workingCopyDir.absolutePath,
-                "--gradleRecipesFolder",
-                Paths.get("tools/gradle-recipes").toFile().absolutePath,
-                "--agpVersion",
-                agpVersion,
-                "--repoLocation",
-                FileUtils.toSystemIndependentPath(repoDir.absolutePath),
-                "--gradlePath",
-                File(gradlePath).toURI().toString()
-            )
-        )
-
-        // Validate working copy
-        main(
+        val result = convertAndValidate(
             arrayOf(
                 "validate",
                 "--mode",
-                "workingcopy",
+                "source",
                 "--source",
-                File(workingCopyDir, source.fileName.toString()).absolutePath,
+                source.toFile().absolutePath,
                 "--gradleRecipesFolder",
                 Paths.get("tools/gradle-recipes").toFile().absolutePath,
                 "--agpVersion",
@@ -147,6 +99,9 @@ class GradleRecipeTest {
                 "--ci"
             )
         )
+
+        // if the recipe was skipped, then mark the test as ignored.
+        Assume.assumeFalse(result == ResultMode.SKIPPED)
     }
 
     private fun getJDKPath(jdkVersion: String?): Path {

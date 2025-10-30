@@ -27,9 +27,9 @@ import kotlin.io.path.writeLines
  */
 class WorkingCopyConverter(private val context: Context) : Converter(context) {
 
-    override fun convertBuildGradle(source: Path, target: Path) {
-        val agpVersion = minAgp ?: error("Calling WorkingCopyConverter without minAgp value")
+    internal lateinit var agpVersion: FullAgpVersion
 
+    override fun convertBuildGradle(source: Path, target: Path) {
         val convertedText = Files.readAllLines(source)
             .wrapGradlePlaceholdersWithInlineValue(
                 "\$AGP_VERSION",
@@ -69,8 +69,6 @@ class WorkingCopyConverter(private val context: Context) : Converter(context) {
     }
 
     override fun convertVersionCatalog(source: Path, target: Path) {
-        val agpVersion = minAgp ?: error("Calling WorkingCopyConverter without minAgp value")
-
         val convertedText = Files.readAllLines(source)
             .wrapVersionCatalogPlaceholders(
                 "\$AGP_VERSION",
@@ -84,8 +82,6 @@ class WorkingCopyConverter(private val context: Context) : Converter(context) {
     }
 
     override fun processGradleWrapperProperties(file: Path) {
-        val agpVersion = minAgp ?: error("Calling WorkingCopyConverter without minAgp value")
-
         // building the line
         // distributionUrl=https\://services.gradle.org/distributions/gradle-7.2-bin.zip
         file.writeLines(

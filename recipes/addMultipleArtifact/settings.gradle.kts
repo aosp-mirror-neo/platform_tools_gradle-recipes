@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-rootProject.name = "get-single-artifact"
+rootProject.name = "addMultipleArtifact"
 
 pluginManagement {
     includeBuild("build-logic")

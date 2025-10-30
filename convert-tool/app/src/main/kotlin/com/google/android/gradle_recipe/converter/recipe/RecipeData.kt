@@ -37,21 +37,34 @@ class RecipeData private constructor(
     val indexName: String,
     /** the name of the folder that should contain the recipe */
     val destinationFolder: String,
-    val minAgpVersion: FullAgpVersion,
+    val minAgpVersion: ShortAgpVersion,
     val maxAgpVersion: ShortAgpVersion?,
     val tasks: List<String>,
     val validationTasks: List<String>?,
     val keywords: List<String>,
 ) {
+    /**
+     * Compares the recipe with the provided AGP versions.
+     *
+     * This only compares the short versions and ignores the patch version or the
+     * preview bits.
+     *
+     * This allows us to declare recipes with a min AGP of 9.0.0 even if that
+     * version does not yet exist and our internal CI will tests it against dev/alpha/rc
+     * versions.
+     *
+     * We also expect to not make API changes in patch releases, so this is not
+     * an issue.
+     */
     fun isCompliantWithAgp(agpVersion: FullAgpVersion): Boolean {
-        val min = minAgpVersion
+        val agpVersion = agpVersion.toShort()
         val max = maxAgpVersion
 
         return if (max != null) {
-            agpVersion >= min && agpVersion.toShort() <= max
+            agpVersion in minAgpVersion..max
         } else {
             // when maxAgpVersion is not specified
-            agpVersion >= min
+            agpVersion >= minAgpVersion
         }
     }
 
@@ -99,9 +112,8 @@ class RecipeData private constructor(
             val minAgpString = parseResult.getString("agpVersion.min")
                 ?: printErrorAndTerminate("Did not find mandatory 'agpVersion.min' in $toml")
 
-            val minAgpVersion = ShortAgpVersion.ofOrNull(minAgpString)?.let {
-                context.getPublishedAgp(it)
-            } ?: FullAgpVersion.of(minAgpString)
+            val minAgpVersion = ShortAgpVersion.ofOrNull(minAgpString)
+                ?: printErrorAndTerminate("unable to parse 'agpVersion.min' with value '$minAgpString'")
 
             val maxAgpString = parseResult.getString("agpVersion.max")
             val maxAgpVersion = if (maxAgpString != null) {

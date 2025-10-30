@@ -59,6 +59,7 @@ class RecursiveConverter(
             agpVersion = agpVersion,
             gradleVersion = gradleVersion,
             mode = Mode.RELEASE,
+            strictVersionCheck = false, // don't want to throw on incompatible recipes, just skip them.
         )
 
         visitRecipes(sourceAll) { recipeFolder: Path ->

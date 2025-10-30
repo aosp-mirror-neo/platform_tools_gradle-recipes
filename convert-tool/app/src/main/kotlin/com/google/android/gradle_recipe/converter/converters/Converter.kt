@@ -35,9 +35,6 @@ abstract class Converter(private val context: Context) {
     protected val DEFAULT_SKIP_FILENAMES = setOf("gradlew", "gradlew.bat", "local.properties")
     protected val DEFAULT_SKIP_FOLDERNAMES = setOf("build", ".idea", ".gradle", "out", "wrapper")
 
-    // some converters may need the minimum AGP version supported by the recipe.
-    var minAgp: FullAgpVersion? = null
-
     protected open val skippedFilenames: Set<String>
         get() = DEFAULT_SKIP_FILENAMES
 

@@ -27,6 +27,7 @@ import com.google.android.gradle_recipe.converter.converters.RecipeConverter.Mod
 import com.google.android.gradle_recipe.converter.converters.RecipeConverter.Mode.SOURCE
 import com.google.android.gradle_recipe.converter.converters.RecipeConverter.Mode.WORKINGCOPY
 import com.google.android.gradle_recipe.converter.converters.RecursiveConverter
+import com.google.android.gradle_recipe.converter.converters.ResultMode
 import com.google.android.gradle_recipe.converter.validators.SourceValidator
 import com.google.android.gradle_recipe.converter.validators.WorkingCopyValidator
 import java.nio.file.Files
@@ -51,6 +52,10 @@ const val COMMAND_CONVERT = "convert"
  * the relevant classes to perform the work
  */
 fun main(args: Array<String>) {
+    convertAndValidate(args)
+}
+
+fun convertAndValidate(args: Array<String>): ResultMode {
     val parser = ArgParser(programName = TOOL_NAME, useDefaultHelpShortName = true)
 
     val overwrite by parser.option(ArgType.Boolean, shortName = "o", description = "Overwrite").default(false)
@@ -96,6 +101,8 @@ fun main(args: Array<String>) {
         )
     }
 
+    var resultMode: ResultMode = ResultMode.FAILURE
+
     parser.subcommands(
         object : Subcommand(
             COMMAND_CONVERT,
@@ -111,8 +118,8 @@ fun main(args: Array<String>) {
                     androidHome,
                     "'androidHome' must not be provided for subcommand '$COMMAND_CONVERT'"
                 )
-                val finalSource = source
-                val finalSourceAll = sourceAll
+                val source = source
+                val sourceAll = sourceAll
 
                 val destinationPath: Path =
                     Path.of(destination ?: printErrorAndTerminate("destination must be specified"))
@@ -121,18 +128,19 @@ fun main(args: Array<String>) {
                     printErrorAndTerminate("Folder does not exist: ${destinationPath.toAbsolutePath()}")
                 }
 
-                if (finalSource != null) {
-                    RecipeConverter(
+                if (source != null) {
+                    resultMode = RecipeConverter(
                         context = context,
                         agpVersion = agpVersion?.let { FullAgpVersion.of(it) },
                         gradleVersion = gradleVersion,
                         mode = mode ?: RELEASE,
+                        strictVersionCheck = true // since it's a single recipe, throw if incompatible with AGP.
                     ).convert(
-                        source = Path.of(finalSource),
+                        source = Path.of(source),
                         destination = destinationPath,
                         overwrite = overwrite
-                    )
-                } else if (finalSourceAll != null) {
+                    ).resultMode
+                } else if (sourceAll != null) {
                     // if we do a convert all then we expect the root folder to be (mostly) empty
                     // (hidden files, like git files, are kept)
                     if (!destinationPath.isEmptyExceptForHidden()) {
@@ -148,7 +156,7 @@ fun main(args: Array<String>) {
                         agpVersion = agpVersion?.let { FullAgpVersion.of(it) },
                         gradleVersion = gradleVersion,
                     ).convertAllRecipes(
-                        sourceAll = Path.of(finalSourceAll),
+                        sourceAll = Path.of(sourceAll),
                         destination = destinationPath
                     )
                 } else {
@@ -165,22 +173,23 @@ fun main(args: Array<String>) {
                     sourceAll,
                     "'sourceAll' must not be provided for subcommand '$COMMAND_VALIDATE'"
                 )
-                if (source == null) {
-                   printErrorAndTerminate(
-                       "'source' must not be null with subcommand '$COMMAND_VALIDATE'"
-                   )
-                }
+                val source = source
+                    ?: printErrorAndTerminate("'source' must not be null with subcommand '$COMMAND_VALIDATE'")
 
                 when (mode) {
                     WORKINGCOPY -> {
-                        val validator =
-                            WorkingCopyValidator(context, agpVersion?.let { FullAgpVersion.of(it) })
-                        validator.validate(Path.of(source))
+                        validateNullArg(
+                            agpVersion,
+                            "'agpVersion' must not be provided for subcommand '$COMMAND_VALIDATE' in 'workingcopy' mode. "
+                        )
+
+                        val validator = WorkingCopyValidator(context)
+                        resultMode = validator.validate(Path.of(source))
                     }
                     SOURCE -> {
                         val validator =
                             SourceValidator(context, agpVersion?.let { FullAgpVersion.of(it) })
-                        validator.validate(Path.of(source))
+                        resultMode = validator.validate(Path.of(source))
                     }
                     else -> {
                         printErrorAndTerminate(
@@ -198,6 +207,8 @@ fun main(args: Array<String>) {
         println("Missing subcommand. Use $TOOL_NAME -h to see usage")
         exitProcess(1)
     }
+
+    return resultMode
 }
 
 private fun validateNullArg(arg: Any?, msg: String) {

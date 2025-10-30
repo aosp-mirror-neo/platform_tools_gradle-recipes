@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-rootProject.name = "template-recipe"
+rootProject.name = "listenToArtifacts"
 
 pluginManagement {
     includeBuild("build-logic")

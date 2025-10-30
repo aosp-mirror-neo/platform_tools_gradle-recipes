@@ -69,6 +69,8 @@ data class ShortAgpVersion(val major: Int, val minor: Int): AgpVersion, Comparab
                 .thenComparingInt { it.minor }
     }
 
+    fun toFull(): FullAgpVersion = FullAgpVersion(AndroidPluginVersion(major, minor, 0))
+
     override fun compareTo(other: ShortAgpVersion): Int {
         return comparator.compare(this, other)
     }
