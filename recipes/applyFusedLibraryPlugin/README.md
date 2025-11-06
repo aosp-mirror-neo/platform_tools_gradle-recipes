@@ -43,31 +43,64 @@ and instrumentation tests.
 
 ## Usage Guide
 
-### Setting up the Fused Library
+### How This Project Was Set Up
 
-*This recipe project was set up with the following key steps*
+*Setting up the Fused Library module (for illustration purposes)*
 
-1. Apply the plugin
-   gradle/libs.versions.toml append
+1. Configure the plugin version. In the `gradle/libs.versions.toml` file, append:
 ```toml
 [plugins]
 android-fusedlibrary = { id = "com.android.fusedlibrary", version.ref = "agp" }
 ```
-2. Create a new module. `File` > `New Module...` . Then, click `Android Library` and fill out the
-   required module metadata. Click `Finish`.
-3. In the new module (let's call it `:fusedLibrary`) open the `build.gradle.kts` file,
-   then replace the `plugins` block with
+2. Create a new empty module. `File` > `New` > `Directory` . Then, name the module, let's call it `fusedLibrary`.
+3. Add the new module to the project by adding `include(":fusedLibrary")` to the `settings.gradle.kts` file.
+4. In the new module directory, create a new build file called `build.gradle.kts` (`right click directory 'fusedLibrary'` > `New` > `File`),
+   then append the following to the `build.gradle.kts` file:
 ```kts
 plugins {
     alias(libs.plugins.android.fusedlibrary)
+    `maven-publish`
+}
+
+androidFusedLibrary {
+    namespace = "com.example.fusedlibrary"
+    minSdk = 21
+
+    // If aarMetadata is not explicitly specified,
+    // aar metadata will be generated based on dependencies.
+    aarMetadata {
+        minCompileSdk = 21
+        minCompileSdkExtension = 1
+    }
+}
+
+publishing {
+    publications {
+        register<MavenPublication>("release") {
+            groupId = "my-company"
+            artifactId = "my-fused-library"
+            version = "1.0"
+            from(components["fusedLibraryComponent"])
+        }
+    }
+    repositories {
+        maven {
+            name = "myrepo"
+            url = uri(layout.buildDirectory.dir("repo"))
+        }
+    }
+}
+
+dependencies {
+    include(project(":androidLib1"))
+    include(project(":androidLib2"))
+    include("com.google.code.gson:gson:2.10.1")
+    include(files("libs/simple-jar-with-A_DoIExist-class.jar"))
 }
 ```
-to apply the Fused Library Plugin
-4. Fused library modules cannot not contain sources such as code or resources, nor does it use
+
+Note: Fused library modules cannot not contain sources such as code or resources, nor does it use
    the typical `implementation` or `api` configurations you may expect to declare as dependencies.
-
-Done.
-
 Fused library introduces a new configuration `include`, that declares what dependencies will be
 fused in the built/published .aar file.
 
@@ -82,6 +115,8 @@ dependencies {
 }
 ```
 
+You may also want to consider adding a  gitignore file to prevent tracking the `build/` directory.
+
 ### Building the fused library
 
 1. Check what dependencies will be included in the .aar based on the dependencies configuration
@@ -91,10 +126,8 @@ dependencies {
    will be included in the library match your expectations.
 2. Once you are satisfied, you can proceed to build the library using
    `./gradlew :fusedLibrary:assemble`. Assuming dependencies are valid,
-   this task produces the .aar fused library at `fusedLibrary/build/bundle/bundle.aar`.
+   this task produces the .aar fused library at `fusedLibrary/build/outputs/aar/fusedLibrary.aar`.
 3. Resync project `ctrl+shift+O`
-
-Done.
 
 At this point, you can add the fused library as a dependency from other modules.
 
@@ -118,7 +151,6 @@ Generating the fused lib POM
 1. Follow the steps of `Building a fused library`
 2. `./gradlew :fusedLibrary:generatePomFileForMavenPublication`
 3. The POM should be created at `fusedLibrary/build/publications/maven/pom-default.xml`
-Done.
 
 Generating a maven repository with the fused library
 1. Add configuration to the fused library build file
@@ -149,11 +181,10 @@ Generating a maven repository with the fused library
 2. Execute the task for creating the repository `./gradlew :fusedLibrary:publishReleasePublicationToMyrepoRepository`
 3. As androidLib3 is a project dependency of the fused library, that also needs to be published to 
 the repository`./gradlew :androidLib3:publishMavenPublicationToMyrepoRepository`
-4. Note: `:app` has already configured dependency substitution that prefers the published local repo 
+
+Note: `:app` has already configured dependency substitution that prefers the published local repo 
 artifacts over the `:fusedLibrary` project itself, so `:app` now automatically depends on the correct 
 artifacts.
-
-Done.
 
 ### Configurations
 
@@ -178,4 +209,3 @@ When filing an issue, please include the following information:
 `<my library module>build/reports/fused_library_report/single/report.json`
 4. Also consider running `./gradlew :<fused library module>:dependencies` if dependency information is relevant
 5. \[optional\] if the build was successful, provide a copy of the .aar
-Done.

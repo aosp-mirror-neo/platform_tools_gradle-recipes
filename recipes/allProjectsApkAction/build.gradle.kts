@@ -14,3 +14,5 @@
  * limitations under the License.
  */
 
+// AGP is coming via the Settings plugin and is therefore already on the parent classloader for
+// all sub-projects, therefore it's not necessary to declare its usage with `apply false` here.

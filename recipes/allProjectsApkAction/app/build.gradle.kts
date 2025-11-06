@@ -15,6 +15,9 @@
  */
 
 plugins {
+    // Normally this plugin would be referenced via a Catalog entry, however because it's part
+    // of the parent classloader via the Settings plugin, it's not neeed in the Catalog.
+    // Therefore we can just reference it here directly via its normal plugin ID.
     id("com.android.application")
 }
 
