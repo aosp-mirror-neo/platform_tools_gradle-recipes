@@ -35,7 +35,7 @@ class ReleaseConverter(
 ) : Converter(context) {
 
     private var pathToGradle: String = ""
-    private var pathToAgpRepo: String = ""
+    private var pathToAgpRepo: String? = null
 
     private var pluginRepo: List<String> = listOf()
     private var dependencyRepo: List<String> = listOf()
@@ -87,7 +87,7 @@ class ReleaseConverter(
         val convertedText = Files.readAllLines(source)
             .replacePlaceHolderWithLine(
                 "\$AGP_REPOSITORY",
-                "maven { url = uri(\"$pathToAgpRepo\") }"
+                pathToAgpRepo?.let { "maven { url = uri(\"$it\") }" } ?: ""
             ).replacePlaceHolderWithList(
             "\$PLUGIN_REPOSITORIES",
             pluginRepo
