@@ -41,7 +41,7 @@ class SourceValidator(
 
     fun validate(recipeFolder: Path, name: String? = null): ResultMode {
         val finalName = name ?: recipeFolder.name
-        val recipeData = RecipeData.loadFrom(recipeFolder, Mode.RELEASE, context)
+        val recipeData = RecipeData.loadFrom(recipeFolder, Mode.RELEASE)
 
         return if (agpVersion != null) {
             validateRecipeFromSource(finalName, recipeFolder, agpVersion)

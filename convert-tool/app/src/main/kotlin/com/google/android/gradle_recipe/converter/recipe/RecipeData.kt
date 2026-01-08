@@ -16,7 +16,6 @@
 
 package com.google.android.gradle_recipe.converter.recipe
 
-import com.google.android.gradle_recipe.converter.context.Context
 import com.google.android.gradle_recipe.converter.converters.FullAgpVersion
 import com.google.android.gradle_recipe.converter.converters.RecipeConverter
 import com.google.android.gradle_recipe.converter.converters.ShortAgpVersion
@@ -71,15 +70,14 @@ class RecipeData private constructor(
     companion object {
         fun loadFrom(
             recipeFolder: Path,
-            mode: RecipeConverter.Mode,
-            context: Context
+            mode: RecipeConverter.Mode
         ): RecipeData {
             val toml = recipeFolder.resolve(RECIPE_METADATA_FILE)
             val parseResult: TomlParseResult = Toml.parse(toml)
 
             if (parseResult.hasErrors()) {
                 System.err.println("TOML Parsing error(s) for $toml:")
-                parseResult.errors().forEach { error -> System.err.println(error.toString()) }
+                parseResult.errors().forEach { error -> System.err.println(error) }
                 printErrorAndTerminate("Unable to read $toml")
             }
 
