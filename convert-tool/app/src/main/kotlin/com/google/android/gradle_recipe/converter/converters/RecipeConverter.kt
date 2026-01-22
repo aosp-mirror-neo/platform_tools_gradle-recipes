@@ -93,7 +93,7 @@ class RecipeConverter(
             printErrorAndTerminate("Source $source is not a directory!")
         }
 
-        val recipeData = RecipeData.loadFrom(source, mode, context)
+        val recipeData = RecipeData.loadFrom(source, mode)
 
         val resultMode = if (converter.isConversionCompliant(recipeData)) {
             val recipeDestination = destination.resolve(recipeData.destinationFolder)
