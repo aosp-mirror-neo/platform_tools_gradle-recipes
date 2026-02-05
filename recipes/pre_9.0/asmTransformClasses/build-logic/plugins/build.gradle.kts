@@ -28,7 +28,7 @@ java {
 dependencies {
     compileOnly(libs.android.gradlePlugin.api)
     implementation(gradleKotlinDsl())
-    implementation("org.ow2.asm:asm-util:9.8")
+    implementation("org.ow2.asm:asm-util:9.9")
 }
 
 gradlePlugin {
