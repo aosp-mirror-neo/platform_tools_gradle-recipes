@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 The Android Open Source Project
+ * Copyright 2026 The Android Open Source Project
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,28 +15,7 @@
  */
 
 plugins {
-    `java-gradle-plugin`
-    alias(libs.plugins.kotlin.jvm)
+    alias(libs.plugins.android.library) apply false
+    alias(libs.plugins.android.kmp.library) apply false
+    alias(libs.plugins.kotlin.multiplatform) apply false
 }
-
-java {
-    toolchain {
-        languageVersion.set(JavaLanguageVersion.of(17))
-    }
-}
-
-dependencies {
-    compileOnly(libs.android.gradlePlugin.api)
-    implementation(gradleKotlinDsl())
-    implementation("org.ow2.asm:asm-util:9.9")
-}
-
-gradlePlugin {
-    plugins {
-        create("customPlugin") {
-            id = "android.recipes.asm_transform_classes"
-            implementationClass = "CustomPlugin"
-        }
-    }
-}
-

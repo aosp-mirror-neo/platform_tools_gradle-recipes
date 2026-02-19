@@ -50,7 +50,7 @@ and instrumentation tests.
 1. Configure the plugin version. In the `gradle/libs.versions.toml` file, append:
 ```toml
 [plugins]
-android-fusedlibrary = { id = "com.android.fusedlibrary", version.ref = "agp" }
+android-fusedlibrary = { id = "com.android.fused-library", version.ref = "agp" }
 ```
 2. Create a new empty module. `File` > `New` > `Directory` . Then, name the module, let's call it `fusedLibrary`.
 3. Add the new module to the project by adding `include(":fusedLibrary")` to the `settings.gradle.kts` file.

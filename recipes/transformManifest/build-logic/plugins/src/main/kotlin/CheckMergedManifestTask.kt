@@ -42,16 +42,19 @@ abstract class CheckMergedManifestTask : DefaultTask() {
 
     @TaskAction
     fun taskAction() {
-        if (!mergedManifest.isPresent || !mergedManifest.get().asFile.exists()) {
-            throw RuntimeException("Merged manifest does not exist.")
-        }
+      if (!mergedManifest.isPresent || !mergedManifest.get().asFile.exists()) {
+        throw RuntimeException("Merged manifest does not exist.")
+      }
 
-        val fileContents = mergedManifest.get().asFile.readText()
-        val gitVersion = gitInfoFile.get().asFile.readText()
-        if (fileContents.contains("android:versionName=\"$gitVersion\"")) {
-            return
-        } else {
-            throw RuntimeException("Merged manifest does not contains transformed data.")
-        }
+      val manifestContents = mergedManifest.get().asFile.readText()
+      val gitVersion = gitInfoFile.get().asFile.readText().trim()
+
+      val expectedString = "android:name=\"com.example.gitVersion\" android:value=\"$gitVersion\""
+
+      if (manifestContents.contains(expectedString)) {
+        return
+      } else {
+        throw RuntimeException("Merged manifest does not contain injected meta-data. \nContent: $manifestContents")
+      }
     }
 }

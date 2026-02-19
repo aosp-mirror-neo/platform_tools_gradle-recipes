@@ -48,6 +48,14 @@ kotlin_library(
     ],
 )
 
+maven_repository(
+    name = "test_deps",
+    artifacts = [
+        "@maven//:org.jetbrains.kotlin.kotlin-test-junit_2.2.10",
+    ],
+    visibility = [":__subpackages__"],
+)
+
 # for testing against older KGP
 maven_repository(
     name = "kotlin_2_1_20",

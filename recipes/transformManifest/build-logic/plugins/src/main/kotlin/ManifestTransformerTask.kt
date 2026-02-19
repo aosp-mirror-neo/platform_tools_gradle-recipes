@@ -36,12 +36,16 @@ abstract class ManifestTransformerTask: DefaultTask() {
 
     @TaskAction
     fun taskAction() {
+      val gitVersion = gitInfoFile.get().asFile.readText().trim()
+      var manifest = mergedManifest.get().asFile.readText()
 
-        val gitVersion = gitInfoFile.get().asFile.readText()
-        var manifest = mergedManifest.asFile.get().readText()
-        manifest = manifest.replace("package=\"com.example.android.recipes.transformManifest\" >", "" +
-                "package=\"com.example.android.recipes.transformManifest\"\n" +
-                "android:versionName=\"$gitVersion\" >")
-        updatedManifest.get().asFile.writeText(manifest)
+      val metadataTag = """
+            <meta-data android:name="com.example.gitVersion" android:value="$gitVersion" />
+            </application>
+        """.trimIndent()
+
+      manifest = manifest.replace("</application>", metadataTag)
+
+      updatedManifest.get().asFile.writeText(manifest)
     }
 }

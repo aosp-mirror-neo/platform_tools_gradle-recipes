@@ -255,6 +255,7 @@ def _recipe_test(
             "manifest_repos": [
                 "//tools/base/build-system/integration-test:kotlin_gradle_plugin_prebuilts",
                 ":kotlin_2_1_20",
+                ":test_deps",
                 "//tools/base/build-system:gradle-runtime-maven",
             ],
             "zip_repos": ["//tools/base/build-system:android_gradle_plugin"],

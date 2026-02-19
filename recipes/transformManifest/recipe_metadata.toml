@@ -1,10 +1,11 @@
 # optional (if present and non-blank) name to use in the index
-indexName = ""
+indexName = "Transform Manifest (Meta-data)"
 # optional (if present and non-blank) folder name to use when converting recipe in RELEASE mode
-destinationFolder = ""
+destinationFolder = "transformManifest"
 
 description ="""
-  This sample shows how to update Android manifest in a meaningful way.
+  This recipe demonstrates how to use the Artifacts API to transform the Android Manifest.
+  It injects a custom <meta-data> element containing a value from another task.
   """
 
 [agpVersion]
@@ -34,5 +35,5 @@ index = [
     "APIs/TaskOutputs.upToDateWhen()",
     "APIs/task.getOutputs()",
     "APIs/SingleArtifact.MERGED_MANIFEST",
+    "Custom Tasks/Manifest Transformation"
 ]
-

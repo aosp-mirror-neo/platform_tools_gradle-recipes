@@ -38,7 +38,7 @@ class CustomPlugin : Plugin<Project> {
             val gitVersionProvider =
                 project.tasks.register("gitVersionProvider", GitVersionTask::class.java) {
                     it.gitVersionOutputFile.set(
-                        File(project.buildDir, "intermediates/gitVersionProvider/output")
+                        project.layout.buildDirectory.file("intermediates/gitVersionProvider/output")
                     )
                     it.outputs.upToDateWhen { false } // never use cache
                 }
