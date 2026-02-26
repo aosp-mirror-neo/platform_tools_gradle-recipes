@@ -1,6 +1,6 @@
 load("//tools/base/bazel:kotlin.bzl", "kotlin_library", "kotlin_test")
 load("//tools/base/bazel:maven.bzl", "maven_repository")
-load("//tools/base/build-system/integration-test:common-dependencies.bzl", "KGP_1_8_10", "KGP_1_9_22", "KGP_2_1_20")
+load("//tools/base/build-system/integration-test:common-dependencies.bzl", "KGP_1_8_10", "KGP_1_9_22", "KGP_2_1_20", "KGP_2_3_10")
 load(":recipes.bzl", "recipe_test_suite")
 
 kotlin_library(
@@ -51,12 +51,18 @@ kotlin_library(
 maven_repository(
     name = "test_deps",
     artifacts = [
-        "@maven//:org.jetbrains.kotlin.kotlin-test-junit_2.2.10",
+        "@maven//:org.jetbrains.kotlin.kotlin-test-junit_2.3.10",
     ],
     visibility = [":__subpackages__"],
 )
 
 # for testing against older KGP
+maven_repository(
+    name = "kotlin_2_3_10",
+    artifacts = KGP_2_3_10,
+    visibility = [":__subpackages__"],
+)
+
 maven_repository(
     name = "kotlin_2_1_20",
     artifacts = KGP_2_1_20,

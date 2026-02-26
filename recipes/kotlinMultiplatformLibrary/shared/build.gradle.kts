@@ -32,7 +32,7 @@ kotlin {
         }
 
         compilations.getByName("hostTest").compileTaskProvider.configure {
-            compilerOptions.languageVersion.set(KotlinVersion.KOTLIN_1_8)
+            compilerOptions.languageVersion.set(KotlinVersion.KOTLIN_2_0)
         }
     }
 
