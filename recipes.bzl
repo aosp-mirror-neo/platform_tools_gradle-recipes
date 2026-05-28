@@ -249,6 +249,23 @@ def _recipe_test(
             ],
             "jdk_version": 17,
         },
+        "9.0.0": {
+            "name": sanitized_name + "_9_0_0",
+            "gradle_path": "$(location //tools/base/build-system:gradle-distrib-9.1.0)",
+            "manifest_repos": [
+                "//tools/base/build-system/previous-versions:9.0.0",
+                "//tools/base/build-system/integration-test:kotlin_gradle_plugin_prebuilts",
+                ":kotlin_2_2_10",
+                ":kotlin_2_2_0",
+                "//tools/base/build-system:gradle-9.1-runtime-maven",
+            ],
+            "zip_repos": [],
+            "data": [
+                "//prebuilts/studio/sdk:build-tools/36.0.0",
+                "//tools/base/build-system:gradle-distrib-9.1.0",
+            ],
+            "jdk_version": 17,
+        },
         "ToT": {
             "name": sanitized_name + "_dev",
             "gradle_path": "$(location //tools/base/build-system:gradle-distrib)",
